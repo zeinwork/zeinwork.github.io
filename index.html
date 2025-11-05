@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Daabolla</title>
+<title>Bookmarks - Daabolla</title>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <style>
   :root {
@@ -21,26 +21,27 @@
     background: radial-gradient(circle at top, #3b82f6 0%, #1e3a8a 100%);
     color: var(--blue-dark);
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
+    padding: 40px 20px;
   }
 
-  .wrap {
+  .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  header {
     background: linear-gradient(180deg, rgba(255,255,255,0.97), var(--card-bg));
     border-radius: 28px;
     box-shadow: 0 25px 70px rgba(0,0,0,0.25);
-    padding: 60px;
+    padding: 40px 60px;
     text-align: center;
     backdrop-filter: blur(12px);
+    margin-bottom: 40px;
   }
 
-  /* Enhanced title */
   h1 {
-    font-size: 100px;
+    font-size: 72px;
     font-weight: 300;
     font-family: "Poppins", sans-serif;
     background: linear-gradient(90deg, #e0f2fe 0%, #93c5fd 20%, #3b82f6 40%, #1e40af 60%, #3b82f6 80%, #e0f2fe 100%);
@@ -48,9 +49,8 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     animation: shimmer 10s linear infinite;
-    text-shadow: 0 0 30px rgba(96,165,250,0.4);
   }
 
   @keyframes shimmer {
@@ -58,105 +58,338 @@
     100% { background-position: 100% 50%; }
   }
 
-  p.lead {
+  .subtitle {
     font-size: 18px;
     color: var(--muted);
-    margin-bottom: 40px;
     letter-spacing: 0.5px;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
+  .category {
+    background: linear-gradient(180deg, rgba(255,255,255,0.97), var(--card-bg));
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.18);
+    padding: 35px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(12px);
   }
 
-  .card {
-    background: linear-gradient(180deg, #ffffff, #dbeafe);
-    border-radius: 20px;
-    padding: 30px 24px;
-    text-decoration: none;
-    color: inherit;
-    box-shadow: 0 10px 35px rgba(37,99,235,0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  .category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
   }
 
-  .card:hover {
-    transform: translateY(-12px) scale(1.04);
-    box-shadow: 0 22px 60px rgba(37,99,235,0.35);
-  }
-
-  .icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 20px;
-    margin: 0 auto 20px;
+  .category-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
-    font-weight: 700;
+    font-size: 24px;
     color: white;
+    flex-shrink: 0;
   }
 
   .blue { background: linear-gradient(135deg, #2563eb, #60a5fa); }
   .purple { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
   .teal { background: linear-gradient(135deg, #059669, #34d399); }
   .gold { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .red { background: linear-gradient(135deg, #dc2626, #ef4444); }
+  .indigo { background: linear-gradient(135deg, #4f46e5, #818cf8); }
+  .cyan { background: linear-gradient(135deg, #0891b2, #22d3ee); }
+  .pink { background: linear-gradient(135deg, #db2777, #f472b6); }
 
-  .card h3 {
-    font-size: 22px;
-    margin-bottom: 8px;
+  .category h2 {
+    font-size: 28px;
+    font-weight: 600;
     color: var(--blue-dark);
   }
 
-  .card p {
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .bookmark {
+    background: linear-gradient(180deg, #ffffff, #dbeafe);
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--blue-dark);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.12);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bookmark:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(37,99,235,0.3);
+  }
+
+  .bookmark-icon {
+    width: 16px;
+    height: 16px;
+    background: var(--blue);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .bookmark-text {
     font-size: 15px;
-    color: var(--muted);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   footer {
+    text-align: center;
     margin-top: 60px;
-    color: var(--muted);
+    padding: 20px;
+    color: var(--white);
     font-size: 15px;
+    opacity: 0.8;
   }
 
   @media (max-width: 700px) {
-    .wrap { padding: 30px 20px; }
-    h1 { font-size: 60px; letter-spacing: 2px; }
+    header { padding: 30px 25px; }
+    h1 { font-size: 48px; letter-spacing: 2px; }
+    .category { padding: 25px 20px; }
+    .links-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Daabolla</h1>
-    <p class="lead">Personal collection of modern web tools</p>
+  <div class="container">
+    <header>
+      <h1>Bookmarks</h1>
+      <p class="subtitle">Quick access to your most important links</p>
+    </header>
 
-    <div class="grid">
-      <a class="card" href="currency_converter.html">
-        <div class="icon blue">₵</div>
-        <h3>Currency Converter</h3>
-        <p>Live rates and instant conversion between PLN, USD, EUR, and CHF.</p>
-      </a>
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon blue">📧</div>
+        <h2>Main</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Gmail Inbox</span>
+        </a>
+        <a href="https://app.exactflow.pl/en/dashboard" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Exactflow Dashboard</span>
+        </a>
+        <a href="https://exactsolution.peopleforce.io/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Peopleforce</span>
+        </a>
+        <a href="https://calendar.google.com/calendar/u/0/r/agenda" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Google Calendar</span>
+        </a>
+      </div>
+    </div>
 
-      <a class="card" href="video-downloader.html">
-        <div class="icon purple">▶</div>
-        <h3>Video Downloader</h3>
-        <p>Download videos quickly and easily from your favorite sources.</p>
-      </a>
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon purple">📊</div>
+        <h2>Markets</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://exactsolutions.sellasist.pl/admin/orders/edit?orderby=date&order=desc&new=1" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Sellasist Orders</span>
+        </a>
+        <a href="https://www.backmarket.fr/bo-seller/insights?tableau=quality-dashboard" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Back Market Insights</span>
+        </a>
+        <a href="https://merchant.refurbed.com/performance" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Refurbed Performance</span>
+        </a>
+        <a href="https://refurbed-merchant.zendesk.com/agent/filters/20839037681297" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Refurbed Zendesk</span>
+        </a>
+        <a href="https://sellercentral.amazon.fr/orders-v3/ref=xx_myo_dnav_xx?shipByDate=all&page=1" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Amazon Seller Central</span>
+        </a>
+        <a href="https://backmarket.my.site.com/ssc/s/case/Case/00B3X00000DlGH1UAN" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Back Market Support</span>
+        </a>
+        <a href="https://i-focus.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">i-Focus</span>
+        </a>
+      </div>
+    </div>
 
-      <a class="card" href="weather.html">
-        <div class="icon teal">☀</div>
-        <h3>Weather</h3>
-        <p>Current weather and 3-day forecast — powered by Open-Meteo (no API key).</p>
-      </a>
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon teal">📦</div>
+        <h2>Stock</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1t9FrsG2j-y8irIc4wrrzaaEdIFrpTjUD_Su_6eZ3Iks/edit?gid=781753021#gid=781753021" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Stock Sheet 1</span>
+        </a>
+        <a href="https://admin.shopify.com/store/stgexactsolutions/products/inventory?selectedColumns=VARIANT_NAME%2CSKU%2CUNAVAILABLE_QUANTITY%2CCOMMITTED_QUANTITY%2CAVAILABLE_QUANTITY%2CON_HAND_QUANTITY%2CINCOMING_QUANTITY&location_id=90983923992&query=m1&order=UNAVAILABLE_QUANTITY&orderDirection=ASCENDING" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Shopify Inventory</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1m-Cs4Fn7qnnjgnRELegoBkcyXafbCxsj2FbhJm_G8rQ/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Stock Sheet 2</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1HFxKgZxQiEYAKgC1rJ9iBBkd_MN6zMkPH3auLWKfeZg/edit?gid=1164166781#gid=1164166781" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Stock Sheet 3</span>
+        </a>
+      </div>
+    </div>
 
-      <a class="card" href="favorites.html">
-        <div class="icon gold">★</div>
-        <h3>Favorites</h3>
-        <p>Your quick links and favorite websites — opens in a new tab.</p>
-      </a>
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon gold">↩️</div>
+        <h2>Returns</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1Xf6g1PH7037deH9-TjPJShXosDpz9gy46iouhpnf0Kw/edit?gid=1387645895#gid=1387645895" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Sheet 1</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1RLissQeK62DvDU5yV8se3-YI73Do8CgSLlmbQ0h0aSY/edit?gid=611284103#gid=611284103" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Sheet 2</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1ObrKMjAlhUNMaDfLl_GDvZ0_xkE5gRNfZGFvKgs8pL8/edit?gid=1244989376#gid=1244989376" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Sheet 3</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1aAlcVDCTNGmLgj0EAttf35LKb93gMLBZEBlZzn2C2vU/edit?gid=918095836#gid=918095836" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Sheet 4</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon red">🔧</div>
+        <h2>RMA</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1TELYaF61VijpZ2V8SlBHBMGBywloDETYwPfeYrBZdbo/edit?gid=970938847#gid=970938847" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">RMA Sheet 1</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1nQaHzeN3ygN8xOUdjEGH9WUWfTSicxdG06HKYza1K8A/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">RMA Sheet 2</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon indigo">🚚</div>
+        <h2>DHL</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1gHXsEqIugJ9ZIfwunTMEaEdZR_4jlmfDgbT_3eETbVE/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">DHL Sheet</span>
+        </a>
+        <a href="https://dhl24.com.pl/pl/uzytkownik/zaloguj.html" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">DHL24 Login</span>
+        </a>
+        <a href="https://www.dhl.com/pl-en/home/tracking.html?tracking-id=28655403435" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">DHL Tracking</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon cyan">⚠️</div>
+        <h2>Mistakes Log</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/19o_rp7bP7bQHl9S-yKb-hYsKFNRiOjiAEuYztsAPVgw/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Mistakes Log 1</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1i2Mmgdem1-861l75hCHmYcgutjetnQ3HRAfQy6mM-fM/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Mistakes Log 2</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon pink">🛠️</div>
+        <h2>Tools</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://cloud.securaze.com/dashboard/asset-overview" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Securaze Cloud</span>
+        </a>
+        <a href="https://navajowhite-crocodile-878519.hostingersite.com/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Hostinger Site</span>
+        </a>
+        <a href="https://refurbed-sellasist-viewer.vercel.app/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Refurbed Sellasist Viewer</span>
+        </a>
+        <a href="https://sellasist-user-logs.vercel.app/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Sellasist User Logs</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon gold">🛒</div>
+        <h2>Buy</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://allegro.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Allegro</span>
+        </a>
+        <a href="https://www.amazon.pl/ref=nav_logo" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Amazon PL</span>
+        </a>
+        <a href="https://pl.aliexpress.com/?spm=a2g0o.home.logo.1.3011405fOdK6Fm" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">AliExpress</span>
+        </a>
+        <a href="https://www.ebay.com/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">eBay</span>
+        </a>
+        <a href="https://allegrolokalnie.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Allegro Lokalnie</span>
+        </a>
+      </div>
     </div>
 
     <footer>
