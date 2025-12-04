@@ -1,733 +1,646 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Returns Dashboard</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-        .shimmer {
-            animation: shimmer 2s infinite linear;
-            background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
-            background-size: 1000px 100%;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
-        }
-        .pulse-glow {
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Daabolla Admin Panel</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-dark: #0f172a;
+    --blue: #2563eb;
+    --blue-light: #60a5fa;
+    --white: #ffffff;
+    --muted: #64748b;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.2);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Roboto", "Open Sans", "Montserrat", system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 20%, #06b6d4 40%, #10b981 60%, #059669 80%, #0d9488 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    color: var(--blue-dark);
+    min-height: 100vh;
+    padding: 20px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: overlayPulse 15s ease infinite;
+  }
+
+  @keyframes overlayPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes gradientShift {
+    0% { 
+      background-position: 0% 50%;
+    }
+    33% { 
+      background-position: 50% 50%;
+    }
+    66% { 
+      background-position: 100% 50%;
+    }
+    100% { 
+      background-position: 0% 50%;
+    }
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    padding: 32px 40px;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInDown 0.6s ease-out;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmerHeader 3s infinite;
+  }
+
+  @keyframes shimmerHeader {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    font-family: "Montserrat", "Roboto", sans-serif;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981, #f59e0b, #ef4444, #8b5cf6, #3b82f6);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+    text-transform: uppercase;
+    animation: colorFlow 8s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+  }
+
+  @keyframes colorFlow {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 50%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .category {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: var(--shadow-lg);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+
+  .category:nth-child(1) { animation-delay: 0.1s; }
+  .category:nth-child(2) { animation-delay: 0.2s; }
+  .category:nth-child(3) { animation-delay: 0.3s; }
+  .category:nth-child(4) { animation-delay: 0.4s; }
+  .category:nth-child(5) { animation-delay: 0.5s; }
+  .category:nth-child(6) { animation-delay: 0.6s; }
+  .category:nth-child(7) { animation-delay: 0.7s; }
+  .category:nth-child(8) { animation-delay: 0.8s; }
+  .category:nth-child(9) { animation-delay: 0.9s; }
+  .category:nth-child(10) { animation-delay: 1s; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .category:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .category:hover .category-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+  .purple { background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); }
+  .teal { background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); }
+  .gold { background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); }
+  .red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+  .indigo { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); }
+  .cyan { background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); }
+  .pink { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); }
+  .orange { background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); }
+  .emerald { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+
+  .category h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    letter-spacing: -0.3px;
+  }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .bookmark {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--blue-dark);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bookmark::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .bookmark:hover::before {
+    left: 100%;
+  }
+
+  .bookmark:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .bookmark-icon {
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bookmark:hover .bookmark-icon {
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6);
+  }
+
+  .bookmark-text {
+    font-size: 14px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.2px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 24px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+    font-weight: 500;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.3px;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 16px 12px;
+    }
+    
+    header {
+      padding: 24px 20px;
+      border-radius: 20px;
+    }
+    
+    h1 {
+      font-size: 32px;
+      background-size: 300% 100%;
+    }
+    
+    .subtitle {
+      font-size: 12px;
+    }
+    
+    .category {
+      padding: 20px 18px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .category h2 {
+      font-size: 20px;
+    }
+    
+    .category-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
+    
+    .links-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    
+    .bookmark {
+      padding: 14px 16px;
+    }
+    
+    footer {
+      margin-top: 32px;
+      padding: 20px;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 28px;
+      background-size: 300% 100%;
+    }
+    
+    .category {
+      padding: 18px 16px;
+    }
+    
+    .category h2 {
+      font-size: 18px;
+    }
+  }
+</style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        // Icon components
-        const Calendar = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
-        const TrendingUp = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>;
-        const Package = () => <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>;
-        const Refresh = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
-        const CheckCircle = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
-        const Search = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+  <div class="container">
+    <header>
+      <h1>Daabolla Admin Panel</h1>
+    </header>
 
-        function ReturnsDashboard() {
-            const [data, setData] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
-            const [startDate, setStartDate] = useState('');
-            const [endDate, setEndDate] = useState('');
-            const [searchText, setSearchText] = useState('');
-            const [filteredData, setFilteredData] = useState([]);
-            const [showSummary, setShowSummary] = useState(false);
-            const [issueSummary, setIssueSummary] = useState({});
-            const [lastUpdated, setLastUpdated] = useState(null);
-            
-            // Google Sheets URL - convert to CSV export format
-            // Only reading from "ReturnsRecord" sheet tab - no data modification
-            const GOOGLE_SHEETS_ID = '1bFiGJjn1bE1f7Ipmg1kY7r-e95_U0Ovk9ndZMOZGyRk';
-            const SHEET_NAME = 'ReturnsRecord'; // Specific sheet tab name
-            // Using gviz API which supports sheet name parameter for CSV export
-            const CSV_EXPORT_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-            
-            const fetchDataFromGoogleSheets = async () => {
-                setLoading(true);
-                setError(null);
-                
-                try {
-                    let csvText = null;
-                    
-                    // Try direct access first (works for public sheets)
-                    // This is READ-ONLY - no data modification
-                    try {
-                        const directResponse = await fetch(CSV_EXPORT_URL);
-                        if (directResponse.ok) {
-                            csvText = await directResponse.text();
-                        }
-                    } catch (directError) {
-                        console.log('Direct access failed, trying proxy...', directError);
-                    }
-                    
-                    // If direct access failed, use CORS proxy
-                    // Still READ-ONLY - only fetching data
-                    if (!csvText) {
-                        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(CSV_EXPORT_URL)}`;
-                        const proxyResponse = await fetch(proxyUrl);
-                        
-                        if (!proxyResponse.ok) {
-                            throw new Error(`HTTP error! status: ${proxyResponse.status}`);
-                        }
-                        
-                        const proxyData = await proxyResponse.json();
-                        csvText = proxyData.contents;
-                    }
-                    
-                    if (!csvText || csvText.trim().length === 0) {
-                        throw new Error(`No data received from "ReturnsRecord" sheet. Please ensure the sheet is shared publicly or accessible.`);
-                    }
-                    
-                    // Process the CSV data (READ-ONLY operation - no modifications to source)
-                    processCSVData(csvText);
-                    setLastUpdated(new Date());
-                } catch (err) {
-                    console.error('Error fetching data:', err);
-                    setError(err.message || `Failed to fetch data from "ReturnsRecord" sheet. Please check if the sheet is accessible.`);
-                    setLoading(false);
-                }
-            };
-            
-            useEffect(() => {
-                fetchDataFromGoogleSheets();
-            }, []);
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon blue">⚙️</div>
+        <h2>Main</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Gmail</span>
+        </a>
+        <a href="https://app.exactflow.pl/en/dashboard" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Exact Flow</span>
+        </a>
+        <a href="https://exactsolution.peopleforce.io/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">People Force</span>
+        </a>
+        <a href="https://calendar.google.com/calendar/u/0/r/agenda" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Calendar</span>
+        </a>
+      </div>
+    </div>
 
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon purple">📊</div>
+        <h2>Markets</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://exactsolutions.sellasist.pl/admin/orders/edit?orderby=date&order=desc&new=1" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Sellasist</span>
+        </a>
+        <a href="https://www.backmarket.fr/bo-seller/insights?tableau=quality-dashboard" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Back Market</span>
+        </a>
+        <a href="https://merchant.refurbed.com/performance" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Refurbed</span>
+        </a>
+        <a href="https://refurbed-merchant.zendesk.com/agent/filters/20839037681297" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Zen Desk</span>
+        </a>
+        <a href="https://backmarket.my.site.com/ssc/s/case/Case/00B3X00000DlGH1UAN" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">BM SSC</span>
+        </a>
+        <a href="https://i-focus.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">i-focus</span>
+        </a>
+      </div>
+    </div>
 
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon orange">⭐</div>
+        <h2>Ratings</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1LiAaUpdO5KVdnFdFvZGuSPuKg_r4cHsom-X4jZXHJMA/edit?gid=1695815544#gid=1695815544" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Back Market Ratings</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1aM9c-F2SGLPa0QvNMz5SM5UOr2IDvAFPfb_BYjF03To/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Refurbed Ratings</span>
+        </a>
+      </div>
+    </div>
 
-            const sortDataByDate = (dataToSort) => {
-                if (dataToSort.length === 0) return dataToSort;
-                
-                // Get the first column header (date column)
-                const headers = Object.keys(dataToSort[0]).filter(key => key !== 'id');
-                const dateColumn = headers[0]; // Column 0 is date
-                
-                return dataToSort.sort((a, b) => {
-                    const dateA = parseDate(a[dateColumn]);
-                    const dateB = parseDate(b[dateColumn]);
-                    if (!dateA && !dateB) return 0;
-                    if (!dateA) return 1;
-                    if (!dateB) return -1;
-                    return dateB - dateA; // Latest first (descending)
-                });
-            };
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon teal">📦</div>
+        <h2>Stock</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1t9FrsG2j-y8irIc4wrrzaaEdIFrpTjUD_Su_6eZ3Iks/edit?gid=781753021#gid=781753021" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Main Stock</span>
+        </a>
+        <a href="https://admin.shopify.com/store/stgexactsolutions/products/inventory?selectedColumns=VARIANT_NAME%2CSKU%2CUNAVAILABLE_QUANTITY%2CCOMMITTED_QUANTITY%2CAVAILABLE_QUANTITY%2CON_HAND_QUANTITY%2CINCOMING_QUANTITY&location_id=90983923992&query=m1&order=UNAVAILABLE_QUANTITY&orderDirection=ASCENDING" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Shopify</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1m-Cs4Fn7qnnjgnRELegoBkcyXafbCxsj2FbhJm_G8rQ/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Upcoming Stock</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1HFxKgZxQiEYAKgC1rJ9iBBkd_MN6zMkPH3auLWKfeZg/edit?gid=1164166781#gid=1164166781" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Stock Sheet Pakistan</span>
+        </a>
+        <a href="Warehouse.html" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Warehouse Management</span>
+        </a>
+      </div>
+    </div>
 
-            const processCSVData = (csvText) => {
-                try {
-                    const rows = csvText.split('\n').map(row => {
-                        // Better CSV parsing to handle quoted fields with commas
-                        const result = [];
-                        let current = '';
-                        let inQuotes = false;
-                        
-                        for (let i = 0; i < row.length; i++) {
-                            const char = row[i];
-                            if (char === '"') {
-                                inQuotes = !inQuotes;
-                            } else if (char === ',' && !inQuotes) {
-                                result.push(current.trim());
-                                current = '';
-                            } else {
-                                current += char;
-                            }
-                        }
-                        result.push(current.trim()); // Add last field
-                        
-                        return result.map(cell => {
-                            // Remove quotes if present
-                            return cell.replace(/^"|"$/g, '').trim();
-                        });
-                    }).filter(row => row.length > 1); // Filter out empty rows
-                    
-                    console.log('Total rows:', rows.length);
-                    if (rows.length > 0) {
-                        console.log('Headers:', rows[0]);
-                    }
-                    
-                    // Get headers from first row
-                    const headers = rows[0];
-                    
-                    const processedData = rows.slice(1).map((row, index) => {
-                        const rowData = { id: index };
-                        headers.forEach((header, colIndex) => {
-                            rowData[header] = row[colIndex] || '';
-                        });
-                        return rowData;
-                    }).filter(item => {
-                        // Filter out rows that don't have a date (column 0)
-                        return item[headers[0]];
-                    });
-                    
-                    console.log('Processed data length:', processedData.length);
-                    if (processedData.length > 0) {
-                        console.log('Sample processed data:', processedData.slice(0, 1));
-                    }
-                    
-                    const sortedData = sortDataByDate(processedData);
-                    setData(sortedData);
-                    setFilteredData(sortedData);
-                    setLoading(false);
-                } catch (err) {
-                    console.error('Error processing CSV:', err);
-                    setData([]);
-                    setFilteredData([]);
-                    setLoading(false);
-                }
-            };
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon gold">↩️</div>
+        <h2>Customer Returns</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1bFiGJjn1bE1f7Ipmg1kY7r-e95_U0Ovk9ndZMOZGyRk/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1RLissQeK62DvDU5yV8se3-YI73Do8CgSLlmbQ0h0aSY/edit?gid=611284103#gid=611284103" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">ISS Stock</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1ObrKMjAlhUNMaDfLl_GDvZ0_xkE5gRNfZGFvKgs8pL8/edit?gid=1244989376#gid=1244989376" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Suppliers Returns</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1aAlcVDCTNGmLgj0EAttf35LKb93gMLBZEBlZzn2C2vU/edit?gid=918095836#gid=918095836" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Pallet</span>
+        </a>
+        <a href="Returns Dashboard.html" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Summary</span>
+        </a>
+        <a href="Returns Analyzer.html" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Returns Analyzer</span>
+        </a>
+      </div>
+    </div>
 
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon red">🔧</div>
+        <h2>RMA</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1TELYaF61VijpZ2V8SlBHBMGBywloDETYwPfeYrBZdbo/edit?gid=970938847#gid=970938847" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">RMA Stock</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1nQaHzeN3ygN8xOUdjEGH9WUWfTSicxdG06HKYza1K8A/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">RMA Service Work</span>
+        </a>
+      </div>
+    </div>
 
-            const parseDate = (dateStr) => {
-                if (!dateStr) return null;
-                const formats = [
-                    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
-                    /^(\d{1,2})-(\d{1,2})-(\d{4})$/,
-                    /^(\d{4})-(\d{1,2})-(\d{1,2})$/
-                ];
-                
-                for (let format of formats) {
-                    const match = dateStr.match(format);
-                    if (match) {
-                        if (match[0].startsWith('20')) {
-                            return new Date(match[1], match[2] - 1, match[3]);
-                        } else {
-                            return new Date(match[3], match[1] - 1, match[2]);
-                        }
-                    }
-                }
-                
-                const parsed = new Date(dateStr);
-                return isNaN(parsed.getTime()) ? null : parsed;
-            };
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon indigo">🚚</div>
+        <h2>DHL</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/1gHXsEqIugJ9ZIfwunTMEaEdZR_4jlmfDgbT_3eETbVE/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">DHL Main</span>
+        </a>
+        <a href="https://dhl24.com.pl/pl/uzytkownik/zaloguj.html" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">DHL 24</span>
+        </a>
+        <a href="https://www.dhl.com/pl-en/home/tracking.html?tracking-id=28655403435" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Tracking</span>
+        </a>
+      </div>
+    </div>
 
-            const filterByDateRange = () => {
-                console.log('Filter called. Start date:', startDate, 'End date:', endDate, 'Search text:', searchText);
-                console.log('Current data length:', data.length);
-                
-                // Get headers
-                const headers = data.length > 0 ? Object.keys(data[0]).filter(key => key !== 'id') : [];
-                const dateColumn = headers[0]; // Column 0 is date
-                
-                // Find the search column by header name "POWÓD ZWROTU"
-                // Handle variations in whitespace and case
-                const searchColumnName = 'POWÓD ZWROTU';
-                const searchColumn = headers.find(header => {
-                    const normalizedHeader = header.trim();
-                    const normalizedSearch = searchColumnName.trim();
-                    return normalizedHeader === normalizedSearch || 
-                           normalizedHeader.toLowerCase() === normalizedSearch.toLowerCase();
-                });
-                
-                console.log('Available headers:', headers);
-                console.log('Search column found:', searchColumn);
-                
-                let filtered = data;
-                
-                // Filter by date range if dates are provided
-                if (startDate && endDate) {
-                    const start = new Date(startDate);
-                    const end = new Date(endDate);
-                    // Set start date to start of day and end date to end of day
-                    start.setHours(0, 0, 0, 0);
-                    end.setHours(23, 59, 59, 999);
-                    
-                    console.log('Filtering from', start, 'to', end);
-                    
-                    filtered = filtered.filter(item => {
-                        const itemDate = parseDate(item[dateColumn]);
-                        if (!itemDate) return false;
-                        // Create a copy of itemDate to avoid modifying the original
-                        const itemDateCopy = new Date(itemDate);
-                        return itemDateCopy >= start && itemDateCopy <= end;
-                    });
-                }
-                
-                // Filter by search text in "POWÓD ZWROTU" column if search text is provided
-                // Case-insensitive partial matching - works with 1 letter or few letters
-                if (searchText && searchText.trim() && searchColumn) {
-                    const searchLower = searchText.toLowerCase().trim();
-                    console.log('Searching for:', searchLower, 'in column:', searchColumn);
-                    filtered = filtered.filter(item => {
-                        const columnValue = item[searchColumn] || '';
-                        const columnValueLower = columnValue.toLowerCase();
-                        const matches = columnValueLower.includes(searchLower);
-                        console.log('Column value:', columnValue, 'Matches:', matches);
-                        return matches;
-                    });
-                    console.log('After text filter, filtered data length:', filtered.length);
-                } else if (searchText && searchText.trim() && !searchColumn) {
-                    console.warn('Search column "POWÓD ZWROTU" not found in headers');
-                }
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon cyan">⚠️</div>
+        <h2>Mistakes Log</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://docs.google.com/spreadsheets/d/19o_rp7bP7bQHl9S-yKb-hYsKFNRiOjiAEuYztsAPVgw/edit?gid=0#gid=0" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Daily Log Mistakes</span>
+        </a>
+        <a href="https://sellasist-user-logs.vercel.app/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">User Logs Export</span>
+        </a>
+      </div>
+    </div>
 
-                console.log('Final filtered data length:', filtered.length);
-                const sortedFiltered = sortDataByDate([...filtered]); // Create copy and sort
-                setFilteredData(sortedFiltered);
-                setShowSummary(false);
-            };
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon pink">🛠️</div>
+        <h2>Tools</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://cloud.securaze.com/dashboard/asset-overview" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Securaze</span>
+        </a>
+        <a href="https://navajowhite-crocodile-878519.hostingersite.com/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Serial Checker</span>
+        </a>
+        <a href="https://refurbed-sellasist-viewer.vercel.app/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Battery Quantities in Orders Checker</span>
+        </a>
+      </div>
+    </div>
 
-            const detectLinkColumn = (headers, sampleData) => {
-                if (!headers || !sampleData || sampleData.length === 0) return -1;
-                
-                // Check each column for URLs
-                for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-                    const header = headers[colIndex];
-                    const columnName = header.toLowerCase();
-                    
-                    // Check if column name suggests it contains links
-                    if (columnName.includes('link') || columnName.includes('url') || columnName.includes('href')) {
-                        return colIndex;
-                    }
-                    
-                    // Check sample data for URLs in this column
-                    const hasUrls = sampleData.slice(0, 5).some(row => {
-                        const value = row[header];
-                        return value && (value.includes('http://') || value.includes('https://') || value.includes('www.'));
-                    });
-                    
-                    if (hasUrls) {
-                        return colIndex;
-                    }
-                }
-                
-                return -1;
-            };
+    <div class="category">
+      <div class="category-header">
+        <div class="category-icon emerald">🛒</div>
+        <h2>Buy</h2>
+      </div>
+      <div class="links-grid">
+        <a href="https://allegro.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Allegro</span>
+        </a>
+        <a href="https://www.amazon.pl/ref=nav_logo" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Amazon</span>
+        </a>
+        <a href="https://pl.aliexpress.com/?spm=a2g0o.home.logo.1.3011405fOdK6Fm" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Ali Express</span>
+        </a>
+        <a href="https://www.ebay.com/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">eBay</span>
+        </a>
+        <a href="https://allegrolokalnie.pl/" target="_blank" class="bookmark">
+          <div class="bookmark-icon"></div>
+          <span class="bookmark-text">Allegro Lokalnie</span>
+        </a>
+      </div>
+    </div>
 
-            const isLink = (text) => {
-                return text && (text.includes('http://') || text.includes('https://') || text.includes('www.'));
-            };
+    <footer>
+      © <span id="year"></span> Daabolla — All rights reserved.
+    </footer>
+  </div>
 
-            const formatLink = (text) => {
-                if (!text) return text;
-                
-                // Add https:// if missing
-                if (text.includes('www.') && !text.includes('http')) {
-                    return 'https://' + text;
-                }
-                return text;
-            };
-
-            const generateIssueSummary = () => {
-                const summary = {};
-                
-                // Get column 8 (issues column) - index 8 = 9th column
-                const headers = data.length > 0 ? Object.keys(data[0]).filter(key => key !== 'id') : [];
-                const issueColumn = headers[8]; // Column 8 is issues (before price column)
-                
-                console.log('Issue column:', issueColumn);
-                console.log('Headers:', headers);
-                console.log('Total items to process:', filteredData.length);
-                
-                let totalIssuesProcessed = 0;
-                
-                filteredData.forEach((item, index) => {
-                    const issueText = issueColumn ? item[issueColumn] : '';
-                    console.log(`Processing item ${index}: "${issueText}"`);
-                    
-                    if (issueText && issueText.trim()) {
-                        // Split by common separators to handle multiple issues in one cell
-                        const issues = issueText.split(/[,;.\n]/).map(i => i.trim()).filter(i => i);
-                        
-                        if (issues.length === 0) {
-                            // If issue field is blank or only whitespace after trimming
-                            const normalized = 'change of mind';
-                            if (summary[normalized]) {
-                                summary[normalized].count++;
-                            } else {
-                                summary[normalized] = { count: 1, original: 'Change of Mind' };
-                            }
-                            totalIssuesProcessed++;
-                        } else {
-                            // Process each individual issue
-                            issues.forEach(issue => {
-                                const normalized = issue.toLowerCase();
-                                if (normalized) {
-                                    if (summary[normalized]) {
-                                        summary[normalized].count++;
-                                    } else {
-                                        summary[normalized] = { count: 1, original: issue };
-                                    }
-                                    totalIssuesProcessed++;
-                                }
-                            });
-                        }
-                    } else {
-                        // Handle completely empty issue field
-                        const normalized = 'change of mind';
-                        if (summary[normalized]) {
-                            summary[normalized].count++;
-                        } else {
-                            summary[normalized] = { count: 1, original: 'Change of Mind' };
-                        }
-                        totalIssuesProcessed++;
-                    }
-                });
-
-                console.log('Total issues processed:', totalIssuesProcessed);
-                console.log('Summary:', summary);
-                setIssueSummary(summary);
-                setShowSummary(true);
-            };
-
-            const resetFilter = () => {
-                setStartDate('');
-                setEndDate('');
-                setSearchText('');
-                setFilteredData(data);
-                setShowSummary(false);
-            };
-
-
-
-            if (loading && data.length === 0) {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-                        <div className="text-center fade-in">
-                            <div className="relative">
-                                <div className="animate-spin rounded-full h-20 w-20 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-6"></div>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <Package className="text-indigo-600 opacity-50" />
-                                </div>
-                            </div>
-                            <p className="text-gray-700 text-xl font-semibold">Loading returns data...</p>
-                            <p className="text-gray-500 text-sm mt-2">Fetching from Google Sheets</p>
-                        </div>
-                    </div>
-                );
-            }
-            
-            if (error && data.length === 0) {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-orange-50 flex items-center justify-center p-6">
-                        <div className="max-w-md w-full glass-effect rounded-3xl shadow-2xl p-8 text-center fade-in">
-                            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-3">Error Loading Data</h2>
-                            <p className="text-gray-600 mb-6">{error}</p>
-                            <button
-                                onClick={fetchDataFromGoogleSheets}
-                                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-8 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center mx-auto"
-                            >
-                                <Refresh />
-                                <span className="ml-2">Retry</span>
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-
-
-            const sortedIssues = Object.entries(issueSummary)
-                .sort((a, b) => b[1].count - a[1].count);
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
-                    <div className="max-w-7xl mx-auto">
-                        {/* Header Section */}
-                        <div className="glass-effect rounded-3xl shadow-2xl p-8 mb-8 fade-in">
-                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                                <div className="flex-1">
-                                    <h1 className="text-5xl font-extrabold gradient-text mb-3">Returns Dashboard</h1>
-                                    <p className="text-gray-600 text-lg">Real-time analytics from "ReturnsRecords" sheet (Read-only)</p>
-                                    {lastUpdated && (
-                                        <p className="text-sm text-gray-500 mt-2 flex items-center">
-                                            <CheckCircle className="text-green-500 mr-2" />
-                                            Last updated: {lastUpdated.toLocaleTimeString()}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={fetchDataFromGoogleSheets}
-                                        disabled={loading}
-                                        className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        <Refresh className={loading ? 'animate-spin' : ''} />
-                                        <span>{loading ? 'Refreshing...' : 'Refresh Data'}</span>
-                                    </button>
-                                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                        <Package className="text-white" />
-                                    </div>
-                                </div>
-                            </div>
-                            {error && data.length > 0 && (
-                                <div className="mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-                                    <p className="text-red-700 text-sm">⚠️ {error}</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Date Filter Section */}
-                        <div className="glass-effect rounded-3xl shadow-xl p-8 mb-8 fade-in">
-                            <div className="flex items-center mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                    <Calendar className="text-white" />
-                                </div>
-                                <div>
-                                    <h2 className="text-3xl font-bold text-gray-800">Date Range & Text Filter</h2>
-                                    <p className="text-gray-500 text-sm">Filter returns by date range and search text in "POWÓD ZWROTU" column</p>
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium"
-                                    />
-                                </div>
-                                
-                                <div className="flex items-end">
-                                    <button
-                                        onClick={filterByDateRange}
-                                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                                    >
-                                        Apply Filter
-                                    </button>
-                                </div>
-                                
-                                <div className="flex items-end">
-                                    <button
-                                        onClick={resetFilter}
-                                        className="w-full bg-gray-500 text-white py-3 px-6 rounded-xl hover:bg-gray-600 transition-all font-semibold shadow-lg hover:shadow-xl"
-                                    >
-                                        Reset
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            {/* Text Search Section */}
-                            <div className="mb-6 pt-4 border-t border-gray-200">
-                                <div className="flex items-center mb-3">
-                                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                                        <Search className="text-white" />
-                                    </div>
-                                    <label className="block text-sm font-semibold text-gray-700">Search in "POWÓD ZWROTU" Column</label>
-                                </div>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={searchText}
-                                        onChange={(e) => setSearchText(e.target.value)}
-                                        onKeyPress={(e) => {
-                                            if (e.key === 'Enter') {
-                                                filterByDateRange();
-                                            }
-                                        }}
-                                        placeholder="Enter text to search (case-insensitive, partial match)..."
-                                        className="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all font-medium"
-                                    />
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                        <Search className="text-gray-400" />
-                                    </div>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-2 ml-12">Case-insensitive search - works with 1 letter or more. Filters within selected date range (if any).</p>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-gray-200">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 bg-indigo-500 rounded-full pulse-glow"></div>
-                                    <p className="text-gray-700 font-medium">
-                                        Showing <span className="font-bold text-indigo-600 text-lg">{filteredData.length}</span> of <span className="font-bold text-gray-800">{data.length}</span> returns
-                                    </p>
-                                </div>
-                                
-                                {data.length > 0 && (
-                                    <button
-                                        onClick={generateIssueSummary}
-                                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2"
-                                    >
-                                        <TrendingUp />
-                                        <span>Generate Issue Summary</span>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {showSummary && (
-                            <div className="glass-effect rounded-3xl shadow-xl p-8 mb-8 fade-in">
-                                <div className="flex items-center mb-6">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                        <TrendingUp className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-3xl font-bold text-gray-800">Issue Summary</h2>
-                                        <p className="text-gray-500 text-sm">Analysis of return issues</p>
-                                    </div>
-                                </div>
-                                
-                                {sortedIssues.length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Package className="text-gray-400" />
-                                        </div>
-                                        <p className="text-gray-600 text-lg">No issues found in selected date range</p>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                                        {sortedIssues.map(([key, value], index) => (
-                                            <div 
-                                                key={key} 
-                                                className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-5 border-2 border-indigo-100 hover:border-indigo-300 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1 fade-in"
-                                                style={{ animationDelay: `${index * 0.1}s` }}
-                                            >
-                                                <div className="flex items-start justify-between">
-                                                    <p className="text-gray-800 font-semibold flex-1 pr-3 text-sm leading-relaxed">{value.original}</p>
-                                                    <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md min-w-[3rem] text-center">
-                                                        {value.count}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                
-                                <div className="mt-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-100">
-                                    <div className="flex flex-wrap items-center gap-6 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-                                            <span className="text-gray-700 font-semibold">Total Unique Issues:</span>
-                                            <span className="text-indigo-600 font-bold text-lg">{sortedIssues.length}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                                            <span className="text-gray-700 font-semibold">Total Returns in Range:</span>
-                                            <span className="text-purple-600 font-bold text-lg">{filteredData.length}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Returns Table Section */}
-                        <div className="glass-effect rounded-3xl shadow-xl p-8 fade-in">
-                            <div className="flex items-center mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                                    <Package className="text-white" />
-                                </div>
-                                <div>
-                                    <h2 className="text-3xl font-bold text-gray-800">Returns Details</h2>
-                                    <p className="text-gray-500 text-sm">Complete list of return records</p>
-                                </div>
-                            </div>
-                            
-                            <div className="overflow-x-auto rounded-2xl border-2 border-gray-100 shadow-inner">
-                                {filteredData.length > 0 ? (() => {
-                                    const headers = Object.keys(filteredData[0]).filter(key => key !== 'id');
-                                    const linkColumnIndex = detectLinkColumn(headers, filteredData);
-                                    const columnAfterLink = linkColumnIndex + 1;
-                                    
-                                    return (
-                                        <table className="w-full">
-                                            <thead>
-                                                <tr className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                                                    {headers.map((header, index) => (
-                                                        <th key={index} className={`px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider ${index === 0 ? 'whitespace-nowrap' : ''}`}>
-                                                            {header}
-                                                        </th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-200 bg-white">
-                                                {filteredData.map((item, rowIndex) => (
-                                                    <tr 
-                                                        key={item.id} 
-                                                        className={`transition-all hover:bg-indigo-50 ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                                                    >
-                                                        {Object.entries(item).filter(([key]) => key !== 'id').map(([key, value], colIndex) => (
-                                                            <td key={colIndex} className={`px-6 py-4 text-sm text-gray-700 ${colIndex === 0 ? 'whitespace-nowrap font-medium' : ''} ${colIndex === columnAfterLink ? 'whitespace-nowrap' : ''}`}>
-                                                                {colIndex === linkColumnIndex && isLink(value) ? (
-                                                                    <a 
-                                                                        href={formatLink(value)} 
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        className="text-indigo-600 hover:text-indigo-800 underline font-medium hover:font-semibold transition-all"
-                                                                    >
-                                                                        {value}
-                                                                    </a>
-                                                                ) : (
-                                                                    value || <span className="text-gray-400 italic">-</span>
-                                                                )}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    );
-                                })() : (
-                                    <div className="text-center py-16">
-                                        <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                                            <Package className="text-gray-400" />
-                                        </div>
-                                        <p className="text-gray-600 text-xl font-semibold mb-2">No returns found</p>
-                                        <p className="text-gray-500">Try adjusting your date range filter</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        ReactDOM.render(<ReturnsDashboard />, document.getElementById('root'));
-    </script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
