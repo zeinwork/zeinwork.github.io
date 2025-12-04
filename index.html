@@ -24,12 +24,28 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
         
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: auto;
+        }
+        
+        .click-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            cursor: pointer;
+        }
+        
+        .click-overlay.hidden {
+            display: none;
         }
         
         .buttons-container {
@@ -87,9 +103,11 @@
     </style>
 </head>
 <body>
+    <div class="click-overlay" id="clickOverlay"></div>
+    
     <div class="video-container">
         <iframe 
-            src="https://drive.google.com/file/d/1wnUPp2meowstn-DZbF0FnrH43Wo8uAfE/preview" 
+            src="https://drive.google.com/file/d/1wnUPp2meowstn-DZbF0FnrH43Wo8uAfE/preview?autoplay=1" 
             allow="autoplay">
         </iframe>
     </div>
@@ -101,12 +119,14 @@
     
     <script>
         const buttonsContainer = document.getElementById('buttonsContainer');
+        const clickOverlay = document.getElementById('clickOverlay');
         const mainBtn = document.getElementById('mainBtn');
         const toolsBtn = document.getElementById('toolsBtn');
         
-        // Show buttons when clicking anywhere on the page
-        document.addEventListener('click', function() {
+        // Show buttons when clicking on the overlay
+        clickOverlay.addEventListener('click', function() {
             buttonsContainer.classList.add('show');
+            clickOverlay.classList.add('hidden');
         });
         
         // Button click handlers
