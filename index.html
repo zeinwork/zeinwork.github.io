@@ -107,8 +107,9 @@
     
     <div class="video-container">
         <iframe 
-            src="https://drive.google.com/file/d/1wnUPp2meowstn-DZbF0FnrH43Wo8uAfE/preview" 
-            allow="autoplay">
+            src="https://drive.google.com/file/d/1wnUPp2meowstn-DZbF0FnrH43Wo8uAfE/preview?autoplay=1&loop=0" 
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
         </iframe>
     </div>
     
@@ -123,7 +124,13 @@
         const mainBtn = document.getElementById('mainBtn');
         const toolsBtn = document.getElementById('toolsBtn');
         
-        // Show buttons when clicking on the overlay
+        // Show buttons after 3 seconds
+        setTimeout(function() {
+            buttonsContainer.classList.add('show');
+            clickOverlay.classList.add('hidden');
+        }, 3000);
+        
+        // Show buttons when clicking on the overlay (backup)
         clickOverlay.addEventListener('click', function() {
             buttonsContainer.classList.add('show');
             clickOverlay.classList.add('hidden');
