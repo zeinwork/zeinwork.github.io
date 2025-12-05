@@ -128,13 +128,7 @@
         const toolsBtn = document.getElementById('toolsBtn');
 
         
-        // Show buttons after 3 seconds
-        setTimeout(function() {
-            buttonsContainer.classList.add('show');
-            clickOverlay.classList.add('hidden');
-        }, 3000);
-        
-        // Show buttons when clicking on the overlay (backup)
+        // Show buttons when clicking anywhere on the page
         clickOverlay.addEventListener('click', function() {
             buttonsContainer.classList.add('show');
             clickOverlay.classList.add('hidden');
