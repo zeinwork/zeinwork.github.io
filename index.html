@@ -124,15 +124,7 @@
         const clickOverlay = document.getElementById('clickOverlay');
         const mainBtn = document.getElementById('mainBtn');
         const toolsBtn = document.getElementById('toolsBtn');
-        const iframe = document.querySelector('iframe');
-        
-        // Force autoplay and highest resolution
-        window.addEventListener('load', function() {
-            // Reload iframe with autoplay and highest resolution
-            setTimeout(function() {
-                iframe.src = iframe.src + '&autoplay=1&res=1080p';
-            }, 1000);
-        });
+
         
         // Show buttons after 3 seconds
         setTimeout(function() {
