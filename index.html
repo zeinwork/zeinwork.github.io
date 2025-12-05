@@ -107,9 +107,10 @@
     
     <div class="video-container">
         <iframe 
-            src="https://drive.google.com/file/d/1wnUPp2meowstn-DZbF0FnrH43Wo8uAfE/preview" 
-            allow="autoplay; encrypted-media"
-            allowfullscreen>
+            src="https://1drv.ms/v/c/254733C53B4AF56E/EZJ-FDbzy_pEsl3BqhJwI0kBjXDxW4BCufNNCd_julIf3A?e=5ZRYqz&autoplay=1&res=1080p" 
+            allow="autoplay; encrypted-media; fullscreen"
+            allowfullscreen
+            muted>
         </iframe>
     </div>
     
@@ -123,6 +124,15 @@
         const clickOverlay = document.getElementById('clickOverlay');
         const mainBtn = document.getElementById('mainBtn');
         const toolsBtn = document.getElementById('toolsBtn');
+        const iframe = document.querySelector('iframe');
+        
+        // Force autoplay and highest resolution
+        window.addEventListener('load', function() {
+            // Reload iframe with autoplay and highest resolution
+            setTimeout(function() {
+                iframe.src = iframe.src + '&autoplay=1&res=1080p';
+            }, 1000);
+        });
         
         // Show buttons after 3 seconds
         setTimeout(function() {
