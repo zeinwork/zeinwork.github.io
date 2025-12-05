@@ -50,9 +50,9 @@
         
         .buttons-container {
             position: fixed;
-            top: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             z-index: 10;
             display: flex;
             gap: 30px;
@@ -67,26 +67,25 @@
         }
         
         .btn {
-            padding: 20px 50px;
-            font-size: 24px;
-            font-weight: 600;
+            padding: 10px 25px;
+            font-size: 18px;
+            font-weight: 400;
             color: #fff;
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            backdrop-filter: blur(12px);
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            backdrop-filter: blur(8px);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
         }
         
         .btn:hover {
-            background: rgba(255, 255, 255, 0.18);
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 12px 32px rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05) translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255, 255, 255, 0.08);
         }
         
         @media (max-width: 768px) {
@@ -96,8 +95,8 @@
             }
             
             .btn {
-                padding: 15px 40px;
-                font-size: 20px;
+                padding: 8px 20px;
+                font-size: 16px;
             }
         }
     </style>
