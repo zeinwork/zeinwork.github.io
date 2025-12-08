@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Video Page</title>
+    <title>Employee Tasks December 2025</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,138 +14,181 @@
         }
         
         body {
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Lora', serif;
+            padding: 40px 20px;
+            min-height: 100vh;
         }
         
-        .video-container {
-            position: fixed;
-            top: 0;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+        
+        .employee-section {
+            margin-bottom: 50px;
+            padding: 30px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .employee-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .employee-section:nth-child(2) {
+            border-left-color: #667eea;
+        }
+        
+        .employee-section:nth-child(3) {
+            border-left-color: #667eea;
+        }
+        
+        .employee-section:nth-child(4) {
+            border-left-color: #667eea;
+        }
+        
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 25px;
+            color: #667eea;
+        }
+        
+        .employee-section:nth-child(3) h2 {
+            color: #764ba2;
+        }
+        
+        .employee-section:nth-child(4) h2 {
+            color: #764ba2;
+        }
+        
+        ol {
+            counter-reset: item;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        li {
+            counter-increment: item;
+            margin-bottom: 18px;
+            padding-left: 45px;
+            position: relative;
+            line-height: 1.8;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        li::before {
+            content: counter(item);
+            position: absolute;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            border: none;
-            pointer-events: auto;
-        }
-        
-        .click-overlay {
-            position: fixed;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
-            cursor: pointer;
-        }
-        
-        .click-overlay.hidden {
-            display: none;
-        }
-        
-        .buttons-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
             display: flex;
-            gap: 30px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
         }
         
-        .buttons-container.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .btn {
-            padding: 10px 25px;
-            font-size: 18px;
-            font-weight: 400;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 1px;
-            backdrop-filter: blur(8px);
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05) translateY(-1px);
-            box-shadow: 0 6px 16px rgba(255, 255, 255, 0.08);
-        }
-        
-        @media (max-width: 768px) {
-            .buttons-container {
-                flex-direction: column;
-                gap: 20px;
+        @media print {
+            body {
+                background: white;
+                padding: 0;
             }
             
-            .btn {
-                padding: 8px 20px;
-                font-size: 16px;
+            .container {
+                box-shadow: none;
+                padding: 40px;
+            }
+            
+            .employee-section {
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
-    <div class="click-overlay" id="clickOverlay"></div>
-    
-    <div class="video-container">
-        <video 
-            autoplay 
-            muted 
-            loop 
-            playsinline
-            style="width: 100%; height: 100%; object-fit: cover;">
-            <source src="Scotland.mov" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+    <div class="container">
+        <h1>Employees Tasks</h1>
+        
+        <div class="employee-section">
+            <h2>Anu:</h2>
+            <ol>
+                <li>Place on Subiekt all customers returns from Robert team pallet (COM) as Priority</li>
+                <li>Fix on Subiekt any messages in SKU change channel</li>
+                <li>Place on Subiekt any new shipment after grading + booking and credit note returned to suppliers</li>
+                <li>Prepare grading sheets for quality team whenever a new shipment has been purchased</li>
+                <li>Import on Serial websites any finished grading sheets for the purpose of packing team specs checking with Orders</li>
+                <li>Fill the daily Production report and post on channel</li>
+                <li>Adjust invoices in Subiekt for Refurbed customers when requested by pakistan customers service team</li>
+                <li>Make SKU changes on Subiekt between warehouses (RMA fixed units, Stock to RMA Units...)</li>
+                <li>Creating new SKU on Subiekt for any new unit</li>
+                <li>Attend any DHL meeting when Conducted</li>
+                <li>Train Nikol for all the above tasks as a replacement when Anu is absent</li>
+            </ol>
+        </div>
+        
+        <div class="employee-section">
+            <h2>Dawid:</h2>
+            <ol>
+                <li>Take to warehouse all Returned units on Robert team for Sales (COM)</li>
+                <li>Take to warehouse all Fixed from RMA units for Sales</li>
+                <li>Move to RMA any new units which require repairs before selling</li>
+                <li>Monitor, Guide and supervise all testing team members workflow according to shipments at hands and the current situation</li>
+                <li>Monitor closely all packing team members and ensure all Orders are being packed without delays (especially on Fridays)</li>
+                <li>Constantly checking packing and production consumables and order ahead of time (Tapes, Labels …)</li>
+                <li>Constantly checking all Orders that requires prior setup or repair and ensure completion (Orders needs OS, Orders needs batteries, Orders needs grade changing…)</li>
+                <li>Receiving new shipments and setting workflow for grading team, and ensure Subiekt booking in 24 hours dead line</li>
+                <li>Secure stock in warehouse after grading and testing processes finished</li>
+                <li>Assign members of packing team to other sections for help when no less orders are in place</li>
+                <li>Ensure solid stock separation for units on ground and on Subiekt between all sections and warehouses</li>
+            </ol>
+        </div>
+        
+        <div class="employee-section">
+            <h2>Maciej Łęczycki:</h2>
+            <ol>
+                <li>Handle all DHL cases at hand and follow up their status</li>
+                <li>Compare weekly with Saqib all cases and ensure a full match between numbers and status</li>
+                <li>Assign Meetings with DHL office to pressure reducing the blocked money</li>
+                <li>Generate weekly DHL reports for the current ongoing cases with summary</li>
+                <li>Find solutions for each type of DHL cases to improve the outcome of wining the claims</li>
+                <li>Handle all Supplier's returns warrantee email communications</li>
+                <li>Secure with proper labeling the current ISS stock waiting to be sent for each Supplier separately</li>
+                <li>Packing properly the supplier's returns and ensure proper waybills and documents labeling</li>
+                <li>Keep Track and follow up every shipment sent to any Supplier and update all online data and reporting needed</li>
+                <li>Handle all discounts negotiations needed with suppliers for any returns matters</li>
+                <li>Ensure accurate updated data in ISS stock physically and online documenting and reporting</li>
+                <li>Ensure matching the suppliers returns credit notes between ISS data and Subiekt transactions</li>
+                <li>Help adjusting invoices for customers on Subiekt in case Anu is absent</li>
+            </ol>
+        </div>
     </div>
-    
-    <div class="buttons-container" id="buttonsContainer">
-        <button class="btn" id="mainBtn">Main</button>
-        <button class="btn" id="toolsBtn">Tools</button>
-    </div>
-    
-    <script>
-        const buttonsContainer = document.getElementById('buttonsContainer');
-        const clickOverlay = document.getElementById('clickOverlay');
-        const mainBtn = document.getElementById('mainBtn');
-        const toolsBtn = document.getElementById('toolsBtn');
-
-        
-        // Show buttons when clicking anywhere on the page
-        clickOverlay.addEventListener('click', function() {
-            buttonsContainer.classList.add('show');
-            clickOverlay.classList.add('hidden');
-        });
-        
-        // Button click handlers
-        mainBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.location.href = 'Main.html';
-        });
-        
-        toolsBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.location.href = 'Tools.html';
-        });
-    </script>
 </body>
 </html>
