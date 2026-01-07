@@ -7,9 +7,9 @@
 
   <style>
     :root{
-      --bg:#eaf2f6;          /* slightly darker background */
+      --bg:#eaf2f6;
       --card:#ffffff;
-      --border:#dbe7ee;
+      --border:#d6e3ea;
       --text:#1f2933;
       --muted:#5f6f7a;
       --blue:#2f80ed;
@@ -22,12 +22,18 @@
       margin:0;
       font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:
-        radial-gradient(900px 500px at 80% 0%, rgba(47,128,237,.18), transparent 60%),
-        radial-gradient(900px 500px at 0% 100%, rgba(45,156,139,.18), transparent 60%),
-        var(--bg);
+        radial-gradient(900px 500px at 85% -10%, rgba(47,128,237,.22), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, rgba(45,156,139,.22), transparent 60%),
+        linear-gradient(180deg, #edf5f9, var(--bg));
       color:var(--text);
       line-height:1.75;
       font-size:17px;
+      animation:bgMove 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgMove{
+      from{background-position:0% 0%, 100% 100%, 0% 0%}
+      to{background-position:100% 0%, 0% 100%, 0% 0%}
     }
 
     .container{
@@ -46,11 +52,12 @@
       display:inline-block;
       padding:9px 16px;
       border-radius:999px;
-      background:#eef6fb;
+      background:linear-gradient(180deg, #f6fbff, #eaf3f9);
       border:1px solid var(--border);
       color:var(--muted);
       font-size:14px;
       margin-bottom:18px;
+      box-shadow:0 4px 10px rgba(0,0,0,.04);
     }
 
     h1{
@@ -70,11 +77,21 @@
     }
 
     .statement{
-      background:var(--card);
+      background:linear-gradient(180deg, #ffffff, #fbfdff);
       border:1px solid var(--border);
       border-radius:22px;
       padding:38px;
-      box-shadow:0 12px 28px rgba(0,0,0,.05);
+      box-shadow:
+        0 20px 40px rgba(31,41,51,.08),
+        inset 0 1px 0 rgba(255,255,255,.6);
+      transition:transform .35s ease, box-shadow .35s ease;
+    }
+
+    .statement:hover{
+      transform:translateY(-4px);
+      box-shadow:
+        0 26px 60px rgba(31,41,51,.12),
+        inset 0 1px 0 rgba(255,255,255,.6);
     }
 
     .statement h2{
@@ -112,6 +129,11 @@
     li{
       margin:12px 0;
       font-size:17px;
+      position:relative;
+    }
+
+    li::marker{
+      color:var(--blue);
     }
 
     footer{
