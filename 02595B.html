@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MacBook Pro 16″ (2021) — M1 Max • 32 GB • 512 GB</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Cosmic / Space Gray inspired palette */
+      --bg0: #070A12;
+      --bg1: #0B1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --soft: rgba(255,255,255,.55);
+
+      --a1: #7C5CFF;  /* violet */
+      --a2: #22D3EE;  /* cyan */
+      --a3: #34D399;  /* green */
+      --a4: #FBBF24;  /* amber */
+      --danger: #FB7185;
+
+      --shadow: 0 22px 70px rgba(0,0,0,.55);
+      --radius: 22px;
+      --radius2: 16px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 900px at 15% 10%, rgba(124,92,255,.30), transparent 60%),
+        radial-gradient(1000px 800px at 85% 25%, rgba(34,211,238,.22), transparent 60%),
+        radial-gradient(900px 700px at 60% 95%, rgba(52,211,153,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* Subtle starfield */
+    .stars{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.35;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.8), transparent 60%),
+        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.65), transparent 60%),
+        radial-gradient(1px 1px at 65% 35%, rgba(255,255,255,.8), transparent 60%),
+        radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,.6), transparent 60%);
+      background-size: 320px 320px;
+      filter: blur(.2px);
+    }
+
+    a{ color:inherit; text-decoration:none; }
+
+    .wrap{
+      width:min(1120px, 92vw);
+      margin: 0 auto;
+      padding: 38px 0 64px;
+    }
+
+    header{
+      position:relative;
+      padding: 26px 26px 22px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    header::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(700px 260px at 12% 20%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(520px 220px at 85% 30%, rgba(34,211,238,.28), transparent 60%),
+        radial-gradient(500px 240px at 60% 110%, rgba(52,211,153,.18), transparent 60%);
+      filter: blur(10px);
+      opacity:.95;
+      z-index:0;
+    }
+
+    .hero{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+    }
+
+    .kicker{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.85);
+      font-size: 13px;
+      line-height: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .dot{
+      width:9px;height:9px;border-radius:999px;
+      background: linear-gradient(135deg, var(--a2), var(--a1));
+      box-shadow: 0 0 0 4px rgba(124,92,255,.12);
+    }
+
+    h1{
+      margin:0;
+      font-size: clamp(26px, 3.2vw, 40px);
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      max-width: 58ch;
+    }
+
+    .badge-col{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      justify-content:space-between;
+    }
+
+    .score{
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.22);
+      border-radius: var(--radius2);
+      padding: 14px 14px 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .score .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .grade{
+      font-weight:700;
+      letter-spacing: .02em;
+    }
+
+    .grade small{
+      display:block;
+      font-weight:500;
+      color: var(--soft);
+      letter-spacing:0;
+      margin-top: 2px;
+    }
+
+    .meter{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .meter > i{
+      display:block;
+      height:100%;
+      width: 78%;
+      background: linear-gradient(90deg, var(--a2), var(--a1), var(--a4));
+      border-radius: 999px;
+      box-shadow: 0 0 25px rgba(124,92,255,.35);
+    }
+
+    .quick{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .quick .q{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 14px;
+      padding: 10px 10px 9px;
+    }
+    .q .k{ color: var(--soft); font-size: 12px; }
+    .q .v{ font-weight: 700; margin-top: 4px; font-size: 14px; }
+
+    main{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items:start;
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      box-shadow: 0 14px 50px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+
+    .card .hd{
+      padding: 18px 18px 14px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+    }
+
+    .card h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+    .card .hint{
+      margin:0;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .grid{
+      padding: 16px 16px 18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .spec{
+      position:relative;
+      padding: 14px 14px 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .spec::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      opacity:.35;
+      background: radial-gradient(260px 120px at 10% 20%, rgba(34,211,238,.25), transparent 60%),
+                  radial-gradient(260px 120px at 90% 60%, rgba(124,92,255,.22), transparent 60%);
+      filter: blur(10px);
+    }
+
+    .spec > *{ position:relative; z-index:1; }
+
+    .label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color: var(--soft);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+    .value{
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+    .sub{
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .stack{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .callout{
+      padding: 14px 14px 13px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(255,255,255,.05));
+      overflow:hidden;
+      position:relative;
+    }
+    .callout::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(420px 170px at 20% 20%, rgba(251,191,36,.16), transparent 60%),
+                  radial-gradient(420px 170px at 80% 70%, rgba(52,211,153,.14), transparent 60%);
+      filter: blur(12px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .callout > *{ position:relative; z-index:1; }
+    .callout h3{
+      margin:0 0 6px;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+    .callout p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .list{
+      padding: 10px 0 0;
+      margin: 0;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      list-style:none;
+    }
+    .li{
+      display:flex;
+      gap: 10px;
+      padding: 12px 12px 11px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+    }
+    .ico{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      flex: 0 0 auto;
+    }
+    .ico svg{ opacity:.9 }
+    .li strong{ display:block; font-size: 13px; }
+    .li span{ display:block; color: var(--muted); font-size: 13px; line-height: 1.45; margin-top: 2px; }
+
+    .footer{
+      margin-top: 16px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+      padding: 0 4px;
+    }
+
+    .price{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+    }
+    .price b{ color: rgba(255,255,255,.88); }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero{ grid-template-columns: 1fr; }
+      main{ grid-template-columns: 1fr; }
+      .grid{ grid-template-columns: 1fr; }
+      .quick{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px){
+      .quick{ grid-template-columns: 1fr; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto; transition:none !important; animation:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="hero">
+        <div class="title">
+          <div class="kicker">
+            <span class="pill"><span class="dot"></span> 16″ Liquid Retina XDR</span>
+            <span class="pill">M1 Max • 10-core CPU</span>
+            <span class="pill">32-core GPU</span>
+            <span class="pill">Kosmiczna szarość</span>
+          </div>
+
+          <h1>Apple MacBook Pro 16″ (2021) — M1 Max</h1>
+          <p class="subtitle">
+            Konfiguracja: <b>32 GB Unified RAM</b> • <b>512 GB SSD</b> • Kamera <b>FaceTime HD 1080p</b> •
+            Porty: <b>3× Thunderbolt 4</b>, <b>HDMI</b>, <b>SDXC</b>, <b>Jack 3.5 mm</b>.
+          </p>
+        </div>
+
+        <div class="badge-col">
+          <div class="score">
+            <div class="top">
+              <div class="grade">
+                Stan: Dobry
+                <small>Opis oferty / kondycja wizualna</small>
+              </div>
+              <span class="pill" title="Estetyczna ocena (wizualna)">
+                ✨ Ocena
+              </span>
+            </div>
+            <div class="meter" aria-label="Pasek oceny stanu">
+              <i></i>
+            </div>
+          </div>
+
+          <div class="quick">
+            <div class="q">
+              <div class="k">RAM</div>
+              <div class="v">32 GB Unified</div>
+            </div>
+            <div class="q">
+              <div class="k">SSD</div>
+              <div class="v">512 GB</div>
+            </div>
+            <div class="q">
+              <div class="k">CPU</div>
+              <div class="v">10 rdzeni</div>
+            </div>
+            <div class="q">
+              <div class="k">GPU</div>
+              <div class="v">32 rdzenie</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Left: Specs -->
+      <section class="card" aria-labelledby="specs">
+        <div class="hd">
+          <div>
+            <h2 id="specs">Specyfikacja produktu</h2>
+            <p class="hint">Najważniejsze parametry w eleganckiej formie.</p>
+          </div>
+          <span class="pill" title="MacBook Pro 16 (2021)">Model 2021</span>
+        </div>
+
+        <div class="grid">
+          <article class="spec">
+            <div class="label">Model <span class="pill">16″</span></div>
+            <div class="value">Apple MacBook Pro 16″ (2021)</div>
+            <div class="sub">Profesjonalna seria z ekranem XDR oraz układem Apple Silicon.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Procesor <span class="pill">M1 Max</span></div>
+            <div class="value">10-rdzeniowy CPU</div>
+            <div class="sub">8 rdzeni wydajnościowych + 2 rdzenie energooszczędne.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Pamięć RAM <span class="pill">Unified</span></div>
+            <div class="value">32 GB Unified RAM</div>
+            <div class="sub">Zoptymalizowana współpraca CPU/GPU dla płynnej pracy z dużymi projektami.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Dysk <span class="pill">SSD</span></div>
+            <div class="value">512 GB SSD</div>
+            <div class="sub">Błyskawiczny dostęp do danych i szybkie uruchamianie aplikacji.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Wyświetlacz <span class="pill">XDR</span></div>
+            <div class="value">Liquid Retina XDR • 3456 × 2234</div>
+            <div class="sub">Wysoka jasność, kontrast i świetna reprodukcja kolorów do pracy kreatywnej.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Grafika <span class="pill">32-core</span></div>
+            <div class="value">Apple M1 Max • 32 rdzenie GPU</div>
+            <div class="sub">Moc do 3D, wideo 8K, renderingu i wymagających zadań graficznych.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Porty <span class="pill">Pro</span></div>
+            <div class="value">3× Thunderbolt 4 (USB-C) • HDMI • SDXC • Jack</div>
+            <div class="sub">Wygodny zestaw złącz do monitorów, kart SD i akcesoriów.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Kamera <span class="pill">1080p</span></div>
+            <div class="value">FaceTime HD 1080p</div>
+            <div class="sub">Wyraźniejszy obraz podczas wideorozmów i spotkań.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">System <span class="pill">macOS</span></div>
+            <div class="value">macOS (wersja na dzień produkcji)</div>
+            <div class="sub">Stabilny ekosystem dla pracy kreatywnej i programowania.</div>
+          </article>
+
+          <article class="spec">
+            <div class="label">Kolor <span class="pill">Space Gray</span></div>
+            <div class="value">Kosmiczna szarość</div>
+            <div class="sub">Aluminiowa, smukła i wytrzymała konstrukcja o eleganckim wyglądzie.</div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Right: Highlights -->
+      <aside class="card" aria-labelledby="highlights">
+        <div class="hd">
+          <div>
+            <h2 id="highlights">Cechy & atuty</h2>
+            <p class="hint">Dlaczego ta konfiguracja robi wrażenie.</p>
+          </div>
+          <span class="pill">Pro workflow</span>
+        </div>
+
+        <div class="stack">
+          <div class="callout">
+            <h3>Wydajność do zadań profesjonalnych</h3>
+            <p>
+              M1 Max + 32 GB Unified RAM to świetny duet do edycji wideo, grafiki 3D, pracy na dużych plikach i wielu aplikacjach naraz.
+            </p>
+          </div>
+
+          <div class="callout">
+            <h3>Bateria</h3>
+            <p>
+              Do <b>21 godzin</b> pracy na jednym ładowaniu (przeglądanie internetu / odtwarzanie filmów) — mobilność bez stresu.
+            </p>
+          </div>
+
+          <div class="callout">
+            <h3>Bezpieczeństwo i komfort</h3>
+            <p>
+              <b>Touch ID</b> do szybkiego logowania i autoryzacji oraz <b>Magic Keyboard</b> z mechanizmem nożycowym dla wygodnego pisania.
+            </p>
+          </div>
+
+          <ul class="list" aria-label="Szybkie podsumowanie">
+            <li class="li">
+              <div class="ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <strong>Edycja wideo / foto</strong>
+                <span>Liquid Retina XDR + moc GPU pod timeline i RAW-y.</span>
+              </div>
+            </li>
+
+            <li class="li">
+              <div class="ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 12h3M17 12h3M12 4v3M12 17v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <strong>3D / rendering</strong>
+                <span>32-rdzeniowy GPU do renderingu i projektów 3D.</span>
+              </div>
+            </li>
+
+            <li class="li">
+              <div class="ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M8 10h8M8 14h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <strong>Programowanie</strong>
+                <span>Dużo RAM + szybki SSD = szybkie buildy i płynna praca IDE.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <div class="footer">
+      <div class="price" title="Cena początkowa zależna od regionu i oferty">
+        💸 Cena początkowa: <b>~ 2,499 USD</b>
+      </div>
+      <div>
+        © <span id="year"></span> • Wygenerowana karta produktu • Gotowa do wklejenia na stronę / ogłoszenie
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
