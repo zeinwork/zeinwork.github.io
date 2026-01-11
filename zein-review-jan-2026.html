@@ -2,132 +2,149 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Zein – Monthly Performance Review | Production Director</title>
+<title>Zein – Monthly Performance Review</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
     :root {
         --blue: #2563eb;
         --green: #16a34a;
         --orange: #f59e0b;
-        --red: #dc2626;
         --purple: #7c3aed;
-        --bg: #f8fafc;
-        --card: #ffffff;
         --text: #1f2937;
         --muted: #6b7280;
+        --card: rgba(255,255,255,0.93);
     }
 
     body {
         margin: 0;
-        font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
-        background: linear-gradient(180deg, #ffffff, #f1f5f9);
+        font-family: "Inter", system-ui, sans-serif;
+        background:
+            radial-gradient(circle at 15% 20%, #e0f2fe, transparent 45%),
+            radial-gradient(circle at 85% 10%, #dcfce7, transparent 45%),
+            radial-gradient(circle at 50% 90%, #fef3c7, transparent 45%),
+            linear-gradient(180deg, #f8fafc, #eef2f7);
         color: var(--text);
     }
 
     .container {
         max-width: 1300px;
         margin: auto;
-        padding: 50px 40px 80px;
+        padding: 60px 40px 90px;
     }
 
     /* HEADER */
     .header {
-        background: linear-gradient(135deg, #eff6ff, #ffffff);
-        border-radius: 26px;
-        padding: 50px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.08);
-        margin-bottom: 50px;
-        border: 1px solid #e5e7eb;
+        background: var(--card);
+        border-radius: 30px;
+        padding: 55px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+        margin-bottom: 55px;
     }
 
     .header h1 {
-        font-size: 46px;
+        font-family: "Playfair Display", serif;
+        font-size: 52px;
         margin: 0;
-        color: var(--blue);
-        letter-spacing: -0.5px;
+        color: #1e3a8a;
     }
 
     .header h2 {
-        margin: 12px 0 25px;
+        margin: 14px 0 34px;
         font-weight: 400;
         color: var(--muted);
     }
 
-    .header .role {
+    .identity {
         display: flex;
-        gap: 40px;
-        font-size: 18px;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .identity .name {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--blue);
+    }
+
+    .identity .role {
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
 
     /* SECTION */
     .section {
         background: var(--card);
-        border-radius: 22px;
-        padding: 36px;
-        margin-bottom: 36px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+        border-radius: 26px;
+        padding: 40px;
+        margin-bottom: 38px;
+        box-shadow: 0 22px 45px rgba(0,0,0,0.10);
         border-left: 10px solid var(--blue);
     }
 
-    .section.green { border-color: var(--green); }
-    .section.orange { border-color: var(--orange); }
-    .section.purple { border-color: var(--purple); }
+    .green { border-color: var(--green); }
+    .orange { border-color: var(--orange); }
+    .purple { border-color: var(--purple); }
 
     .section h3 {
         margin-top: 0;
-        font-size: 28px;
-        margin-bottom: 22px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        font-size: 30px;
+        margin-bottom: 24px;
     }
 
     ul {
         padding-left: 22px;
-        line-height: 1.8;
-        font-size: 16.5px;
+        line-height: 1.9;
+        font-size: 16.8px;
     }
 
-    li {
-        margin-bottom: 10px;
-    }
+    li { margin-bottom: 10px; }
 
-    .good { color: var(--green); font-weight: 600; }
-    .warn { color: var(--orange); font-weight: 600; }
-
-    /* KPI GRID */
+    /* KPI BUTTONS */
     .kpis {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 26px;
         margin: 30px 0;
     }
 
     .kpi {
-        background: linear-gradient(135deg, #ffffff, #f8fafc);
-        border-radius: 20px;
-        padding: 26px;
+        background: linear-gradient(135deg, #2563eb, #60a5fa);
+        color: white;
+        border-radius: 22px;
+        padding: 28px;
         text-align: center;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        box-shadow: 0 18px 35px rgba(37,99,235,0.45);
+    }
+
+    .kpi.green {
+        background: linear-gradient(135deg, #16a34a, #4ade80);
+    }
+
+    .kpi.orange {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
     }
 
     .kpi span {
         font-size: 14px;
-        color: var(--muted);
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
 
     .kpi strong {
-        font-size: 30px;
-        color: var(--blue);
+        font-size: 32px;
+        font-weight: 700;
     }
 
-    /* FOOTER */
     .footer {
         text-align: center;
-        margin-top: 70px;
+        margin-top: 80px;
         font-size: 14px;
         color: var(--muted);
     }
@@ -137,101 +154,102 @@
 <body>
 <div class="container">
 
-    <!-- HEADER -->
-    <div class="header">
-        <h1>Monthly Performance Review</h1>
-        <h2>January 12th, 2026</h2>
-        <div class="role">
-            <div><strong>Name:</strong> Zein</div>
-            <div><strong>Position:</strong> Production Director</div>
-        </div>
+<!-- HEADER -->
+<div class="header">
+    <h1>Monthly Performance Review</h1>
+    <h2>January 12th, 2026</h2>
+    <div class="identity">
+        <div class="name">Zein</div>
+        <div class="role">PRODUCTION DIRECTOR</div>
     </div>
+</div>
 
-    <!-- ACHIEVEMENTS -->
-    <div class="section green">
-        <h3>📈 Key Monthly Achievements</h3>
-        <ul>
-            <li>Maintained <span class="good">Green performance status</span> in Refurbed through active Ratings Case management.</li>
-            <li>Back Market workflow stabilized despite charger & battery sourcing challenges.</li>
-            <li>Packing error rate reduced to <span class="good">0–1 mistake per week</span>.</li>
-            <li>FedEx France orders migration initiated and system testing in progress.</li>
-            <li>Advanced OS installation methods deployed for Intel & Apple Silicon devices.</li>
-            <li>Critical motherboard repairs completed, <span class="good">avoiding high-cost refunds</span>.</li>
-            <li>Finalized major contribution to BackMarket Testing Software development.</li>
-            <li>Cross-department training delivered (RMA, Quality, Office, Excel Advanced).</li>
-        </ul>
-    </div>
+<!-- Topic 1 -->
+<div class="section green">
+<h3>📈 Main Monthly Achievements Update</h3>
+<ul>
+<li>Maintain Green in Refurbed by working on Ratings Cases TTC</li>
+<li>Back Market Under working process because of Chinese chargers and New Batteries</li>
+<li>Stable Packing Process, but the Team will be replaced when Anna finds better people Urgently</li>
+<li>Switching Orders of France to FedEx (today Rogalski should test and show us the system operation)</li>
+<li>Zero to One mistake per week from Packing Team After disciplinary actions</li>
+<li>Training Dawid and Testing team for New fast OS installation methods for Orders (Intel + Silicon CPU)</li>
+<li>Fixing in RMA Dead Motherboards for customers (mostly expensive units) saving the company from huge Refunds and Expenses</li>
+<li>Finished Helping BackMarket Team Hugely on developing their Testing software (Last Video Call with BM Team)</li>
+<li>Training RMA on Repairs and New Methods</li>
+<li>Training Quality on Grading and testing properly</li>
+<li>Training Office staff on Excel from Basic to Upper Advanced techniques</li>
+</ul>
+</div>
 
-    <!-- STOCK -->
-    <div class="section">
-        <h3>📦 Stock & Accessories Control</h3>
-        <ul>
-            <li>Main & accessories stock fully counted on <strong>09.01.2026</strong>.</li>
-            <li>Daily issue-resolution training established for Anu.</li>
-            <li>Subiekt access restricted to ensure accuracy and control.</li>
-        </ul>
-    </div>
+<!-- Topic 2 -->
+<div class="section">
+<h3>📦 Stock & Accessories Control</h3>
+<ul>
+<li>Main stock is counted Last Friday 09.01.2026</li>
+<li>Yearly and from today on will Train Anu how to fix Daily the issues</li>
+<li>Accessories counted is counted Last Friday 09.01.2026</li>
+<li>Dawid and Nicole are not suited for Subiekt In absence of Anu they can only do simple tasks</li>
+</ul>
+</div>
 
-    <!-- SUPPLIER RMA -->
-    <div class="section purple">
-        <h3>🔁 Supplier RMA Governance</h3>
-        <ul>
-            <li>ISS stock aligned physically, digitally, and in Subiekt.</li>
-            <li>Supplier credits processed immediately after shipment.</li>
-            <li>Maciej Łęczycki onboarded & trained under daily supervision.</li>
-            <li>C-Grade documentation shared with Piotr to secure better pricing.</li>
-        </ul>
-    </div>
+<!-- Topic 3 -->
+<div class="section purple">
+<h3>🔁 Supplier RMA Governance</h3>
+<ul>
+<li>All ISS Stock is fully accurate and fixed in Subiekt and Physically + Online sheet</li>
+<li>All Credit returns are Performed on Subiekt by Anu after departure to Supplier</li>
+<li>RMA to be returned to suppliers are always sent without delay (Currently sending the Last Diamond)</li>
+<li>Wassim always signing before we send (in case he needs any parts)</li>
+<li>Trained Maciej Łęczycki after Kuba (Still under monitoring and Training Daily by me)</li>
+<li>All pictures of C Grade sent to Piotr for Discounts on purchase from suppliers</li>
+</ul>
+</div>
 
-    <!-- RMA -->
-    <div class="section">
-        <h3>🧰 RMA Stock & Recovery</h3>
+<!-- Topic 4 -->
+<div class="section">
+<h3>🧰 RMA Stock & Recovery</h3>
+<div class="kpis">
+    <div class="kpi green"><span>RMA MacBooks</span><strong>540</strong></div>
+</div>
+<ul>
+<li>Wassim sends any parts needed from China to Piotr when needed</li>
+<li>Fixing personally dead MacBooks in RMA</li>
+<li>Guided RMA on new method for reducing old RMA numbers that are Stuck till now</li>
+</ul>
+</div>
 
-        <div class="kpis">
-            <div class="kpi">
-                <span>Total RMA MacBooks</span>
-                <strong>540</strong>
-            </div>
-        </div>
+<!-- Topic 5 -->
+<div class="section orange">
+<h3>🚚 DHL Financial Recovery</h3>
+<div class="kpis">
+    <div class="kpi"><span>Cases before Jan 2026</span><strong>116</strong></div>
+    <div class="kpi orange"><span>Value</span><strong>€88,868</strong></div>
+    <div class="kpi"><span>Jan 2026 Cases</span><strong>42</strong></div>
+    <div class="kpi green"><span>Recovered</span><strong>€126,059</strong></div>
+</div>
+<ul>
+<li>All DHL Cases are handled by Maciej Łęczycki and updated daily (with my help)</li>
+<li>Report is weekly updated for Saqib and Wagiha to compare and match his data</li>
+<li>DHL replied to the Official letter sent and speeded up the action</li>
+</ul>
+</div>
 
-        <ul>
-            <li>Personal involvement in repairing dead units.</li>
-            <li>New workflow introduced to reduce long-stuck RMAs.</li>
-            <li>Fast part sourcing from China when required.</li>
-        </ul>
-    </div>
+<!-- Topic 6 -->
+<div class="section green">
+<h3>🗺️ January Strategic Roadmap</h3>
+<ul>
+<li>Removing the most hopeless Packing Employees and recruiting new people</li>
+<li>Removing the bad performances people in Testing Team</li>
+<li>Forcing new process for warehouse Kamil + Vedat (waiting for Anna to find better people)</li>
+<li>Training constantly testing team for faster performance</li>
+<li>Plan is ready to Expand to Repair local service for New Source of Money for the Company</li>
+</ul>
+</div>
 
-    <!-- DHL -->
-    <div class="section orange">
-        <h3>🚚 DHL Financial Recovery</h3>
-
-        <div class="kpis">
-            <div class="kpi"><span>Cases before Jan 2026</span><strong>116</strong></div>
-            <div class="kpi"><span>Value at Risk</span><strong>€88,868</strong></div>
-            <div class="kpi"><span>Jan 2026 Cases</span><strong>42</strong></div>
-            <div class="kpi"><span>Total Recovered</span><strong>€126,059</strong></div>
-        </div>
-
-        <ul>
-            <li>Daily case handling & weekly reporting alignment.</li>
-            <li>Official DHL response received; resolution speed improved.</li>
-        </ul>
-    </div>
-
-    <!-- ROADMAP -->
-    <div class="section green">
-        <h3>🗺️ January Strategic Roadmap</h3>
-        <ul>
-            <li>Remove underperforming packing & testing staff.</li>
-            <li>Strengthen warehouse processes and accountability.</li>
-            <li>Continuous performance-focused training.</li>
-            <li><span class="good">New revenue initiative ready:</span> Local repair service expansion.</li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        Prepared & Presented by Zein — Production Director
-    </div>
+<div class="footer">
+Prepared & Presented by Zein — Production Director
+</div>
 
 </div>
 </body>
