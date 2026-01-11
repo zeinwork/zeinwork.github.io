@@ -7,14 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-:root {
+:root{
     --blue:#2563eb;
+    --blue-soft:#eff6ff;
     --green:#16a34a;
+    --green-soft:#ecfdf5;
     --orange:#f59e0b;
+    --orange-soft:#fffbeb;
     --purple:#7c3aed;
+    --purple-soft:#f5f3ff;
     --text:#1f2937;
     --muted:#6b7280;
-    --card:rgba(255,255,255,0.93);
+    --card:rgba(255,255,255,0.94);
 }
 
 body{
@@ -97,7 +101,7 @@ body{
     margin:0 0 24px;
 }
 
-/* BULLETS */
+/* BULLET LISTS */
 .bullet-list{
     list-style:none;
     padding:0;
@@ -105,24 +109,38 @@ body{
 }
 
 .bullet-list li{
-    background:linear-gradient(135deg,#ffffff,#f8fafc);
     margin-bottom:14px;
-    padding:16px 20px 16px 22px;
-    border-radius:14px;
-    border-left:5px solid var(--blue);
-    box-shadow:0 8px 18px rgba(0,0,0,0.06);
-    font-size:16.8px;
+    padding:16px 20px;
+    border-radius:16px;
+    font-size:16.6px;
     line-height:1.7;
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
 }
 
-.section.green .bullet-list li{border-left-color:var(--green);}
-.section.orange .bullet-list li{border-left-color:var(--orange);}
-.section.purple .bullet-list li{border-left-color:var(--purple);}
+.section.green .bullet-list li{
+    background:var(--green-soft);
+    border-left:5px solid var(--green);
+}
 
-/* KPI BUTTONS */
+.section.orange .bullet-list li{
+    background:var(--orange-soft);
+    border-left:5px solid var(--orange);
+}
+
+.section.purple .bullet-list li{
+    background:var(--purple-soft);
+    border-left:5px solid var(--purple);
+}
+
+.section:not(.green):not(.orange):not(.purple) .bullet-list li{
+    background:var(--blue-soft);
+    border-left:5px solid var(--blue);
+}
+
+/* KPI / HIGHLIGHT BOXES */
 .kpis{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
     gap:26px;
     margin:30px 0;
 }
@@ -131,23 +149,25 @@ body{
     background:linear-gradient(135deg,#2563eb,#60a5fa);
     color:white;
     border-radius:22px;
-    padding:28px;
+    padding:30px;
     text-align:center;
     box-shadow:0 18px 35px rgba(37,99,235,0.45);
 }
 
 .kpi.green{background:linear-gradient(135deg,#16a34a,#4ade80);}
 .kpi.orange{background:linear-gradient(135deg,#f59e0b,#fbbf24);}
+.kpi.purple{background:linear-gradient(135deg,#7c3aed,#a78bfa);}
 
 .kpi span{
     display:block;
     font-size:14px;
     margin-bottom:10px;
+    letter-spacing:0.4px;
 }
 
 .kpi strong{
-    font-size:32px;
-    font-weight:700;
+    font-size:18px;
+    font-weight:600;
 }
 
 /* FOOTER */
@@ -172,8 +192,10 @@ body{
     </div>
 </div>
 
+<!-- Topic 1 -->
 <div class="section green">
 <h3>📈 Main Monthly Achievements Update</h3>
+
 <ul class="bullet-list">
 <li>Maintain Green in Refurbed by working on Ratings Cases TTC</li>
 <li>Back Market Under working process because of Chinese chargers and New Batteries</li>
@@ -183,12 +205,26 @@ body{
 <li>Training Dawid and Testing team for New fast OS installation methods for Orders (Intel + Silicon CPU)</li>
 <li>Fixing in RMA Dead Motherboards for customers (mostly expensive units) saving the company from huge Refunds and Expenses</li>
 <li>Finished Helping BackMarket Team Hugely on developing their Testing software (Last Video Call with BM Team)</li>
-<li>Training RMA on Repairs and New Methods</li>
-<li>Training Quality on Grading and testing properly</li>
-<li>Training Office staff on Excel from Basic to Upper Advanced techniques</li>
 </ul>
+
+<!-- TRAINING HIGHLIGHTS -->
+<div class="kpis">
+    <div class="kpi purple">
+        <span>Training Focus</span>
+        <strong>Training RMA on Repairs and New Methods</strong>
+    </div>
+    <div class="kpi green">
+        <span>Training Focus</span>
+        <strong>Training Quality on Grading and testing properly</strong>
+    </div>
+    <div class="kpi">
+        <span>Training Focus</span>
+        <strong>Training Office staff on Excel from Basic to Upper Advanced techniques</strong>
+    </div>
+</div>
 </div>
 
+<!-- Topic 2 -->
 <div class="section">
 <h3>📦 Stock & Accessories Control</h3>
 <ul class="bullet-list">
@@ -199,6 +235,7 @@ body{
 </ul>
 </div>
 
+<!-- Topic 3 -->
 <div class="section purple">
 <h3>🔁 Supplier RMA Governance</h3>
 <ul class="bullet-list">
@@ -211,6 +248,7 @@ body{
 </ul>
 </div>
 
+<!-- Topic 4 -->
 <div class="section">
 <h3>🧰 RMA Stock & Recovery</h3>
 <div class="kpis">
@@ -223,6 +261,7 @@ body{
 </ul>
 </div>
 
+<!-- Topic 5 -->
 <div class="section orange">
 <h3>🚚 DHL Financial Recovery</h3>
 <div class="kpis">
@@ -238,6 +277,7 @@ body{
 </ul>
 </div>
 
+<!-- Topic 6 -->
 <div class="section green">
 <h3>🗺️ January Strategic Roadmap</h3>
 <ul class="bullet-list">
