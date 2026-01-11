@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zein Tasks - January 12th, 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2em;
+            font-weight: 400;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 3px;
+        }
+
+        .header p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1e3c72;
+            font-size: 1.9em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            letter-spacing: 1px;
+        }
+
+        .task-item {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            position: relative;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25);
+            background: linear-gradient(135deg, #fff 0%, #f0f3ff 100%);
+        }
+
+        .task-item:active {
+            transform: translateX(3px) scale(0.98);
+        }
+
+        .task-text {
+            color: #333;
+            font-size: 1.05em;
+        }
+
+        .frequency {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .frequency.daily {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .frequency.weekly {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .frequency.biweekly {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .frequency.monthly {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .frequency.variable {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.4em;
+            }
+        }
+
+        .highlight-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left-color: #f5576c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Zein Tasks</h1>
+            <p style="font-size: 1.4em; margin-bottom: 5px;">January 12th, 2026</p>
+            <p style="font-size: 1.1em; font-style: italic; opacity: 0.95;">(Production Director)</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Tasks Performed in Warehouse Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow plan for Kamil and Vedat according to number of Orders, Priority, Late on Hold, or any other situation</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking personally Late orders one by one and perform actions according to the situation</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking New Orders and ensure no blockers for the warehouse to collect and process all the SKUs</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking New SKU added recently and making sure to supply needed accessories to make them ready for sale, ex: iMacs, Mac Mini, Mac Studio, Windows laptops that needs special chargers</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking all supplies accessories stock and coordinate with Purchases to Orders ahead of time (Keys, cartons, chargers, tapes, label rolls ...)</span>
+                    <span class="frequency weekly">Weekly Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Counting stock, preparing, guiding, coordinate with Anu and perform fixing discrepancies after comparison and reports</span>
+                    <span class="frequency biweekly">Every two weeks Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Ensuring DHL and other drivers arrival times and fixing the issues occurs with DHL Office quarter</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed in Packing Team Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow for all team according to the number of Orders and Late or urgent cases</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Assigning and distributing of special different Orders (iMacs, Mac Pro Desktops, windows laptops) to right better performance members of the Team</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Fixing personally all issues related to Orders that every member may face during packing (No Os issues, technical problems, hardware problems, grading problems . . .) which are increasing a lot in the last two months because of bad products from new shipments</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Assigning other tasks in the situation with low orders, person by person according to abilities, intelligence and skills</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Monitoring closely one by one every employee performance, attitude, conduct, punctuality, attendance, rules compliance, and many other KPIs</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Training those with potentials, to help and develop their skills in service RMA or other similar positions</span>
+                    <span class="frequency weekly">Weekly Task</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed in Testing Team Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow for all team according to the shipments at hand or to the sales requests on demand</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Assigning tasks to person by person, according to quality of their work and the need of the situation, ex: Photos for discounts, re-grading, testing specific units that needs more awareness like iMac and Windows units</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Guiding and grading personally a lot of units for each member of testing team while grading, due to difficult cases and confusion of the decision that should be make</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Teaching new + old technics needed for new units with different problems in software and hardware, especially that all member has zero knowledge and skills in software or hardware to any brands of MacBook or windows units</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Assigning other tasks in the situation with no shipments to grade or test, person by person according to the needs in production area</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Monitoring closely one by one every employee performance, attitude, conduct, punctuality, attendance, rules compliance, and many other KPIs</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Training for grading, repeating over and over again all appearance differentiation technics and speed necessity performance and how every person should work</span>
+                    <span class="frequency monthly">Two times in a month Training</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed in RMA Team Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow for all team according to the number of orders for new batteries, customers waiting for repair units, RMA stock situation and number of employees available</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Fixing personally with units that are difficult to solve by the team in terms of software corruption state, or iBride firmware issues from customer's repairs or from RMA stock units ex: A1990, A2141 units</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Training for Electronics motherboard repairs and new hardware and software skills</span>
+                    <span class="frequency monthly">One time in a month Training</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed in Customer returns Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Solving cases from several categories, ex: Lost packages, Damaged by customer with report needed, escalation by clients, swapped packages by DHL drivers, Bank transfer refunds needed, Apples warrantees service cases...</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Teaching new technics to speed up the returns to stock process, including fast methods for checking macbooks status and prepare them for stock</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Guiding Yasin for accurate reporting and management of the Returns on excel and physically process</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Ensuring personally that returns go to sales stock warehouse without delay from the pallet</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed with Logistics (Anu + Maciej):</h2>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow for Anu according to priority needed, ex: new shipments, stock fixing, Pakistan requests</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Setting the day workflow for Maciej according to priority needed, ex: ISS RMAs to send, suppliers requests, DHL cases situations</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Fixing Subiekt issues that are occurring because of employees' mistakes or warehouse mistakes</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Preparing and fixing the stock personally with Anu on Subiekt</span>
+                    <span class="frequency weekly">Weekly Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking constantly Maciej work especially all matters related to suppliers' communications, units to send, warrantees to check and process ...</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Checking with Maciej DHL cases and block money situations and working on pressing DHL office and improving the process to speed up getting the money back</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Supporting and teaching Maciej for all daily occurring workflow and new situations arises</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed with HR Section:</h2>
+                <div class="task-item">
+                    <span class="task-text">Reporting and monitoring employee's daily issues including sick leaves, attendance lateness, sudden unplanned disappearance from work ...</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Discussing the situation with current employees' performance and issues</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Setting needed announcements to be placed on People Force regarding all topics for employees matters</span>
+                    <span class="frequency weekly">once or twice per week</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Interview with new candidates for all type of production positions</span>
+                    <span class="frequency weekly">once or twice per week</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Meeting with employees one by one when disciplinary action is needed</span>
+                    <span class="frequency weekly">once or twice per week</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Planning trainings sessions for the upcoming month according to the need</span>
+                    <span class="frequency monthly">once or twice per month</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Planning company meeting with details to be announced or rules to be implemented</span>
+                    <span class="frequency monthly">once per month</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tasks Performed with Pakistan Team:</h2>
+                <div class="task-item">
+                    <span class="task-text">Teaching Saqib and Wagiha for DHL cases first line of defense handling and setting the proper reporting and communication between them and Poland team</span>
+                    <span class="frequency weekly">once per week during the meeting</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Teaching the customer support team and new skills needed to deal with uprising new issues and situations with customers</span>
+                    <span class="frequency weekly">once per week during the meeting</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Highlighting and fixing communications issues between all members from both Pakistan and Poland team</span>
+                    <span class="frequency daily">Daily Task</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Highlighting and guiding the customer support team to achieve proper work flow and customer response skills</span>
+                    <span class="frequency weekly">once per week during the meeting</span>
+                </div>
+            </div>
+
+            <div class="section highlight-section">
+                <h2>General Tasks:</h2>
+                <div class="task-item">
+                    <span class="task-text">Saving the company a Huge amount of Money and Expenses by Fixing personally the motherboards of all customers + RMA stock <strong>Dead</strong> MacBook's and <strong>Dead</strong> Tablets,</span>
+                    <span class="frequency variable">Whenever it arrives, can be daily or weekly</span>
+                </div>
+                <div class="task-item">
+                    <span class="task-text">Teaching RMA team including Yasin, electronic repairing skills that cannot be found on any type of courses online or any paid training schools or university studies.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
