@@ -2,171 +2,179 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Zein – January 2026 Review</title>
+<title>Zein – Monthly Performance Review</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-    :root {
-        --blue: #2563eb;
-        --green: #16a34a;
-        --orange: #f59e0b;
-        --purple: #7c3aed;
-        --text: #1f2937;
-        --muted: #6b7280;
-        --card: rgba(255,255,255,0.93);
-    }
+:root {
+    --blue:#2563eb;
+    --green:#16a34a;
+    --orange:#f59e0b;
+    --purple:#7c3aed;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --card:rgba(255,255,255,0.93);
+}
 
-    body {
-        margin: 0;
-        font-family: "Inter", system-ui, sans-serif;
-        background:
-            radial-gradient(circle at 15% 20%, #e0f2fe, transparent 45%),
-            radial-gradient(circle at 85% 10%, #dcfce7, transparent 45%),
-            radial-gradient(circle at 50% 90%, #fef3c7, transparent 45%),
-            linear-gradient(180deg, #f8fafc, #eef2f7);
-        color: var(--text);
-    }
+body{
+    margin:0;
+    font-family:"Inter",system-ui,sans-serif;
+    background:
+        radial-gradient(circle at 15% 20%, #e0f2fe, transparent 45%),
+        radial-gradient(circle at 85% 10%, #dcfce7, transparent 45%),
+        radial-gradient(circle at 50% 90%, #fef3c7, transparent 45%),
+        linear-gradient(180deg,#f8fafc,#eef2f7);
+    color:var(--text);
+}
 
-    .container {
-        max-width: 1300px;
-        margin: auto;
-        padding: 60px 40px 90px;
-    }
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:60px 40px 90px;
+}
 
-    /* HEADER */
-    .header {
-        background: var(--card);
-        border-radius: 30px;
-        padding: 55px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-        margin-bottom: 55px;
-    }
+/* HEADER */
+.header{
+    background:var(--card);
+    border-radius:30px;
+    padding:55px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.12);
+    margin-bottom:55px;
+}
 
-    .header h1 {
-        font-family: "Playfair Display", serif;
-        font-size: 52px;
-        margin: 0;
-        color: #1e3a8a;
-    }
+.header h1{
+    font-family:"Playfair Display",serif;
+    font-size:52px;
+    margin:0;
+    color:#1e3a8a;
+}
 
-    .header h2 {
-        margin: 14px 0 34px;
-        font-weight: 400;
-        color: var(--muted);
-    }
+.header h2{
+    margin:14px 0 34px;
+    font-weight:400;
+    color:var(--muted);
+}
 
-    .identity {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+.identity{
+    display:flex;
+    gap:20px;
+    align-items:center;
+}
 
-    .identity .name {
-        font-size: 28px;
-        font-weight: 600;
-        color: var(--blue);
-    }
+.identity .name{
+    font-size:28px;
+    font-weight:600;
+    color:var(--blue);
+}
 
-    .identity .role {
-        padding: 10px 18px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #2563eb, #3b82f6);
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
+.identity .role{
+    padding:10px 18px;
+    border-radius:999px;
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    color:white;
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
 
-    /* SECTION */
-    .section {
-        background: var(--card);
-        border-radius: 26px;
-        padding: 40px;
-        margin-bottom: 38px;
-        box-shadow: 0 22px 45px rgba(0,0,0,0.10);
-        border-left: 10px solid var(--blue);
-    }
+/* SECTIONS */
+.section{
+    background:var(--card);
+    border-radius:26px;
+    padding:40px;
+    margin-bottom:38px;
+    box-shadow:0 22px 45px rgba(0,0,0,0.10);
+    border-left:10px solid var(--blue);
+}
 
-    .green { border-color: var(--green); }
-    .orange { border-color: var(--orange); }
-    .purple { border-color: var(--purple); }
+.section.green{border-color:var(--green);}
+.section.orange{border-color:var(--orange);}
+.section.purple{border-color:var(--purple);}
 
-    .section h3 {
-        margin-top: 0;
-        font-size: 30px;
-        margin-bottom: 24px;
-    }
+.section h3{
+    font-size:30px;
+    margin:0 0 24px;
+}
 
-    ul {
-        padding-left: 22px;
-        line-height: 1.9;
-        font-size: 16.8px;
-    }
+/* BULLETS */
+.bullet-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
 
-    li { margin-bottom: 10px; }
+.bullet-list li{
+    background:linear-gradient(135deg,#ffffff,#f8fafc);
+    margin-bottom:14px;
+    padding:16px 20px 16px 22px;
+    border-radius:14px;
+    border-left:5px solid var(--blue);
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
+    font-size:16.8px;
+    line-height:1.7;
+}
 
-    /* KPI BUTTONS */
-    .kpis {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-        gap: 26px;
-        margin: 30px 0;
-    }
+.section.green .bullet-list li{border-left-color:var(--green);}
+.section.orange .bullet-list li{border-left-color:var(--orange);}
+.section.purple .bullet-list li{border-left-color:var(--purple);}
 
-    .kpi {
-        background: linear-gradient(135deg, #2563eb, #60a5fa);
-        color: white;
-        border-radius: 22px;
-        padding: 28px;
-        text-align: center;
-        box-shadow: 0 18px 35px rgba(37,99,235,0.45);
-    }
+/* KPI BUTTONS */
+.kpis{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:26px;
+    margin:30px 0;
+}
 
-    .kpi.green {
-        background: linear-gradient(135deg, #16a34a, #4ade80);
-    }
+.kpi{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    color:white;
+    border-radius:22px;
+    padding:28px;
+    text-align:center;
+    box-shadow:0 18px 35px rgba(37,99,235,0.45);
+}
 
-    .kpi.orange {
-        background: linear-gradient(135deg, #f59e0b, #fbbf24);
-    }
+.kpi.green{background:linear-gradient(135deg,#16a34a,#4ade80);}
+.kpi.orange{background:linear-gradient(135deg,#f59e0b,#fbbf24);}
 
-    .kpi span {
-        font-size: 14px;
-        display: block;
-        margin-bottom: 10px;
-    }
+.kpi span{
+    display:block;
+    font-size:14px;
+    margin-bottom:10px;
+}
 
-    .kpi strong {
-        font-size: 32px;
-        font-weight: 700;
-    }
+.kpi strong{
+    font-size:32px;
+    font-weight:700;
+}
 
-    .footer {
-        text-align: center;
-        margin-top: 80px;
-        font-size: 14px;
-        color: var(--muted);
-    }
+/* FOOTER */
+.footer{
+    text-align:center;
+    margin-top:80px;
+    font-size:14px;
+    color:var(--muted);
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
     <h1>Monthly Performance Review</h1>
     <h2>January 12th, 2026</h2>
     <div class="identity">
-        <div class="role">Zein PRODUCTION DIRECTOR</div>
+        <div class="name">Zein</div>
+        <div class="role">PRODUCTION DIRECTOR</div>
     </div>
 </div>
 
-<!-- Topic 1 -->
 <div class="section green">
 <h3>📈 Main Monthly Achievements Update</h3>
-<ul>
+<ul class="bullet-list">
 <li>Maintain Green in Refurbed by working on Ratings Cases TTC</li>
 <li>Back Market Under working process because of Chinese chargers and New Batteries</li>
 <li>Stable Packing Process, but the Team will be replaced when Anna finds better people Urgently</li>
@@ -181,10 +189,9 @@
 </ul>
 </div>
 
-<!-- Topic 2 -->
 <div class="section">
 <h3>📦 Stock & Accessories Control</h3>
-<ul>
+<ul class="bullet-list">
 <li>Main stock is counted Last Friday 09.01.2026</li>
 <li>Yearly and from today on will Train Anu how to fix Daily the issues</li>
 <li>Accessories counted is counted Last Friday 09.01.2026</li>
@@ -192,10 +199,9 @@
 </ul>
 </div>
 
-<!-- Topic 3 -->
 <div class="section purple">
 <h3>🔁 Supplier RMA Governance</h3>
-<ul>
+<ul class="bullet-list">
 <li>All ISS Stock is fully accurate and fixed in Subiekt and Physically + Online sheet</li>
 <li>All Credit returns are Performed on Subiekt by Anu after departure to Supplier</li>
 <li>RMA to be returned to suppliers are always sent without delay (Currently sending the Last Diamond)</li>
@@ -205,20 +211,18 @@
 </ul>
 </div>
 
-<!-- Topic 4 -->
 <div class="section">
 <h3>🧰 RMA Stock & Recovery</h3>
 <div class="kpis">
     <div class="kpi green"><span>RMA MacBooks</span><strong>540</strong></div>
 </div>
-<ul>
+<ul class="bullet-list">
 <li>Wassim sends any parts needed from China to Piotr when needed</li>
 <li>Fixing personally dead MacBooks in RMA</li>
 <li>Guided RMA on new method for reducing old RMA numbers that are Stuck till now</li>
 </ul>
 </div>
 
-<!-- Topic 5 -->
 <div class="section orange">
 <h3>🚚 DHL Financial Recovery</h3>
 <div class="kpis">
@@ -227,17 +231,16 @@
     <div class="kpi"><span>Jan 2026 Cases</span><strong>42</strong></div>
     <div class="kpi green"><span>Recovered</span><strong>€126,059</strong></div>
 </div>
-<ul>
+<ul class="bullet-list">
 <li>All DHL Cases are handled by Maciej Łęczycki and updated daily (with my help)</li>
 <li>Report is weekly updated for Saqib and Wagiha to compare and match his data</li>
 <li>DHL replied to the Official letter sent and speeded up the action</li>
 </ul>
 </div>
 
-<!-- Topic 6 -->
 <div class="section green">
 <h3>🗺️ January Strategic Roadmap</h3>
-<ul>
+<ul class="bullet-list">
 <li>Removing the most hopeless Packing Employees and recruiting new people</li>
 <li>Removing the bad performances people in Testing Team</li>
 <li>Forcing new process for warehouse Kamil + Vedat (waiting for Anna to find better people)</li>
