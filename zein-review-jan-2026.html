@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zein – Monthly Performance Review | Production Director</title>
+
+<style>
+    :root {
+        --blue: #2563eb;
+        --green: #16a34a;
+        --orange: #f59e0b;
+        --red: #dc2626;
+        --purple: #7c3aed;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+        background: linear-gradient(180deg, #ffffff, #f1f5f9);
+        color: var(--text);
+    }
+
+    .container {
+        max-width: 1300px;
+        margin: auto;
+        padding: 50px 40px 80px;
+    }
+
+    /* HEADER */
+    .header {
+        background: linear-gradient(135deg, #eff6ff, #ffffff);
+        border-radius: 26px;
+        padding: 50px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+        margin-bottom: 50px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .header h1 {
+        font-size: 46px;
+        margin: 0;
+        color: var(--blue);
+        letter-spacing: -0.5px;
+    }
+
+    .header h2 {
+        margin: 12px 0 25px;
+        font-weight: 400;
+        color: var(--muted);
+    }
+
+    .header .role {
+        display: flex;
+        gap: 40px;
+        font-size: 18px;
+    }
+
+    /* SECTION */
+    .section {
+        background: var(--card);
+        border-radius: 22px;
+        padding: 36px;
+        margin-bottom: 36px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+        border-left: 10px solid var(--blue);
+    }
+
+    .section.green { border-color: var(--green); }
+    .section.orange { border-color: var(--orange); }
+    .section.purple { border-color: var(--purple); }
+
+    .section h3 {
+        margin-top: 0;
+        font-size: 28px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    ul {
+        padding-left: 22px;
+        line-height: 1.8;
+        font-size: 16.5px;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+
+    .good { color: var(--green); font-weight: 600; }
+    .warn { color: var(--orange); font-weight: 600; }
+
+    /* KPI GRID */
+    .kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 24px;
+        margin: 30px 0;
+    }
+
+    .kpi {
+        background: linear-gradient(135deg, #ffffff, #f8fafc);
+        border-radius: 20px;
+        padding: 26px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+    }
+
+    .kpi span {
+        font-size: 14px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .kpi strong {
+        font-size: 30px;
+        color: var(--blue);
+    }
+
+    /* FOOTER */
+    .footer {
+        text-align: center;
+        margin-top: 70px;
+        font-size: 14px;
+        color: var(--muted);
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>Monthly Performance Review</h1>
+        <h2>January 12th, 2026</h2>
+        <div class="role">
+            <div><strong>Name:</strong> Zein</div>
+            <div><strong>Position:</strong> Production Director</div>
+        </div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="section green">
+        <h3>📈 Key Monthly Achievements</h3>
+        <ul>
+            <li>Maintained <span class="good">Green performance status</span> in Refurbed through active Ratings Case management.</li>
+            <li>Back Market workflow stabilized despite charger & battery sourcing challenges.</li>
+            <li>Packing error rate reduced to <span class="good">0–1 mistake per week</span>.</li>
+            <li>FedEx France orders migration initiated and system testing in progress.</li>
+            <li>Advanced OS installation methods deployed for Intel & Apple Silicon devices.</li>
+            <li>Critical motherboard repairs completed, <span class="good">avoiding high-cost refunds</span>.</li>
+            <li>Finalized major contribution to BackMarket Testing Software development.</li>
+            <li>Cross-department training delivered (RMA, Quality, Office, Excel Advanced).</li>
+        </ul>
+    </div>
+
+    <!-- STOCK -->
+    <div class="section">
+        <h3>📦 Stock & Accessories Control</h3>
+        <ul>
+            <li>Main & accessories stock fully counted on <strong>09.01.2026</strong>.</li>
+            <li>Daily issue-resolution training established for Anu.</li>
+            <li>Subiekt access restricted to ensure accuracy and control.</li>
+        </ul>
+    </div>
+
+    <!-- SUPPLIER RMA -->
+    <div class="section purple">
+        <h3>🔁 Supplier RMA Governance</h3>
+        <ul>
+            <li>ISS stock aligned physically, digitally, and in Subiekt.</li>
+            <li>Supplier credits processed immediately after shipment.</li>
+            <li>Maciej Łęczycki onboarded & trained under daily supervision.</li>
+            <li>C-Grade documentation shared with Piotr to secure better pricing.</li>
+        </ul>
+    </div>
+
+    <!-- RMA -->
+    <div class="section">
+        <h3>🧰 RMA Stock & Recovery</h3>
+
+        <div class="kpis">
+            <div class="kpi">
+                <span>Total RMA MacBooks</span>
+                <strong>540</strong>
+            </div>
+        </div>
+
+        <ul>
+            <li>Personal involvement in repairing dead units.</li>
+            <li>New workflow introduced to reduce long-stuck RMAs.</li>
+            <li>Fast part sourcing from China when required.</li>
+        </ul>
+    </div>
+
+    <!-- DHL -->
+    <div class="section orange">
+        <h3>🚚 DHL Financial Recovery</h3>
+
+        <div class="kpis">
+            <div class="kpi"><span>Cases before Jan 2026</span><strong>116</strong></div>
+            <div class="kpi"><span>Value at Risk</span><strong>€88,868</strong></div>
+            <div class="kpi"><span>Jan 2026 Cases</span><strong>42</strong></div>
+            <div class="kpi"><span>Total Recovered</span><strong>€126,059</strong></div>
+        </div>
+
+        <ul>
+            <li>Daily case handling & weekly reporting alignment.</li>
+            <li>Official DHL response received; resolution speed improved.</li>
+        </ul>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="section green">
+        <h3>🗺️ January Strategic Roadmap</h3>
+        <ul>
+            <li>Remove underperforming packing & testing staff.</li>
+            <li>Strengthen warehouse processes and accountability.</li>
+            <li>Continuous performance-focused training.</li>
+            <li><span class="good">New revenue initiative ready:</span> Local repair service expansion.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        Prepared & Presented by Zein — Production Director
+    </div>
+
+</div>
+</body>
+</html>
