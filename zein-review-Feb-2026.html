@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zein – Monthly Review (January 2026)</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --blue:#2563eb;
+    --blue-soft:#eff6ff;
+    --green:#16a34a;
+    --green-soft:#ecfdf5;
+    --orange:#f59e0b;
+    --orange-soft:#fffbeb;
+    --purple:#7c3aed;
+    --purple-soft:#f5f3ff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --card:rgba(255,255,255,0.94);
+}
+
+body{
+    margin:0;
+    font-family:"Inter",system-ui,sans-serif;
+    background:
+        radial-gradient(circle at 15% 20%, #e0f2fe, transparent 45%),
+        radial-gradient(circle at 85% 10%, #dcfce7, transparent 45%),
+        radial-gradient(circle at 50% 90%, #fef3c7, transparent 45%),
+        linear-gradient(180deg,#f8fafc,#eef2f7);
+    color:var(--text);
+}
+
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:60px 40px 90px;
+}
+
+/* HEADER */
+.header{
+    background:var(--card);
+    border-radius:30px;
+    padding:55px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.12);
+    margin-bottom:55px;
+}
+
+.header h1{
+    font-family:"Playfair Display",serif;
+    font-size:52px;
+    margin:0;
+    color:#1e3a8a;
+}
+
+.header h2{
+    margin:14px 0 34px;
+    font-weight:400;
+    color:var(--muted);
+}
+
+.identity{
+    display:flex;
+    gap:20px;
+    align-items:center;
+}
+
+.identity .name{
+    font-size:28px;
+    font-weight:600;
+    color:var(--blue);
+}
+
+.identity .role{
+    padding:10px 18px;
+    border-radius:999px;
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    color:white;
+    font-size:14px;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
+
+/* SECTIONS */
+.section{
+    background:var(--card);
+    border-radius:26px;
+    padding:40px;
+    margin-bottom:38px;
+    box-shadow:0 22px 45px rgba(0,0,0,0.10);
+    border-left:10px solid var(--blue);
+}
+
+.section.green{border-color:var(--green);}
+.section.orange{border-color:var(--orange);}
+.section.purple{border-color:var(--purple);}
+
+.section h3{
+    font-size:30px;
+    margin:0 0 24px;
+}
+
+/* BULLET LISTS */
+.bullet-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.bullet-list li{
+    margin-bottom:14px;
+    padding:16px 20px;
+    border-radius:16px;
+    font-size:16.6px;
+    line-height:1.7;
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
+}
+
+.section.green .bullet-list li{
+    background:var(--green-soft);
+    border-left:5px solid var(--green);
+}
+
+.section.orange .bullet-list li{
+    background:var(--orange-soft);
+    border-left:5px solid var(--orange);
+}
+
+.section.purple .bullet-list li{
+    background:var(--purple-soft);
+    border-left:5px solid var(--purple);
+}
+
+.section:not(.green):not(.orange):not(.purple) .bullet-list li{
+    background:var(--blue-soft);
+    border-left:5px solid var(--blue);
+}
+
+/* KPI / HIGHLIGHT BOXES */
+.kpis{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:26px;
+    margin:30px 0;
+}
+
+.kpi{
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    color:white;
+    border-radius:22px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 18px 35px rgba(37,99,235,0.45);
+}
+
+.kpi.green{background:linear-gradient(135deg,#16a34a,#4ade80);}
+.kpi.orange{background:linear-gradient(135deg,#f59e0b,#fbbf24);}
+.kpi.purple{background:linear-gradient(135deg,#7c3aed,#a78bfa);}
+
+.kpi span{
+    display:block;
+    font-size:14px;
+    margin-bottom:10px;
+    letter-spacing:0.4px;
+}
+
+.kpi strong{
+    font-size:18px;
+    font-weight:600;
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+    margin-top:80px;
+    font-size:14px;
+    color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="header">
+    <h1>Monthly Review</h1>
+    <h2>January 2026</h2>
+    <div class="identity">
+        <div class="name">Zein</div>
+        <div class="role">PRODUCTION DIRECTOR</div>
+    </div>
+</div>
+
+<!-- Packing Team -->
+<div class="section green">
+    <h3>📦 Packing Team</h3>
+
+    <ul class="bullet-list">
+        <li><strong>Daily written warnings</strong> if below 40 or if there is no balance in Testing or grading.</li>
+        <li><strong>Daily mistakes control:</strong> checking logs and issuing written warnings for repeated mistakes (new channel for Mistakes).</li>
+        <li><strong>New employee training</strong>.</li>
+        <li><strong>Removing Tomacz</strong> in the last week.</li>
+    </ul>
+</div>
+
+<!-- Warehouse -->
+<div class="section">
+    <h3>🏷️ Warehouse</h3>
+
+    <ul class="bullet-list">
+        <li><strong>Written warnings</strong> if they delay collecting and placing outside the orders.</li>
+        <li><strong>Adam</strong> will be the main person with <strong>Kamil</strong>.</li>
+        <li><strong>Vedat</strong> will be removed after Adam training.</li>
+        <li><strong>No excuse accepted</strong> for not managing the units properly with segregation on shelves.</li>
+        <li><strong>Stock will be counted again</strong> after ISS fixing.</li>
+    </ul>
+</div>
+
+<!-- Testing Team -->
+<div class="section purple">
+    <h3>🧪 Testing Team</h3>
+
+    <div class="kpis">
+        <div class="kpi purple">
+            <span>Daily Minimum</span>
+            <strong>Tested ≥ 80</strong>
+        </div>
+        <div class="kpi">
+            <span>Daily Minimum</span>
+            <strong>Graded ≥ 150</strong>
+        </div>
+    </div>
+
+    <ul class="bullet-list">
+        <li><strong>Written warnings</strong> if tested units are below 80 or graded units below 150 (or no balance between both).</li>
+        <li><strong>Written warnings</strong> for repeated mistakes in grading or SKU management.</li>
+        <li><strong>Trainings</strong> by me, Wassim, and Dawid.</li>
+        <li><strong>3 persons to be removed</strong> because of bad performance.</li>
+    </ul>
+</div>
+
+<!-- Suppliers ISS -->
+<div class="section orange">
+    <h3>🧾 Suppliers ISS</h3>
+
+    <ul class="bullet-list">
+        <li><strong>Fixing personally</strong> the mess from Maciej.</li>
+        <li><strong>Piotr Wiegera</strong> in his position and I’m training him currently.</li>
+        <li>Then <strong>training him for DHL and FedEx claims</strong>.</li>
+    </ul>
+</div>
+
+<!-- RMA Stock -->
+<div class="section">
+    <h3>🧰 RMA Stock</h3>
+
+    <div class="kpis">
+        <div class="kpi green">
+            <span>Total Units</span>
+            <strong>500</strong>
+        </div>
+        <div class="kpi">
+            <span>Priority</span>
+            <strong>SKU accuracy vs Subiekt</strong>
+        </div>
+        <div class="kpi orange">
+            <span>Training</span>
+            <strong>MB Repairing</strong>
+        </div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Total units currently <strong>500</strong>.</li>
+        <li><strong>Stock must be checked</strong> by Wassim and his team because a lot of SKU are not matching Subiekt (counting only is not enough).</li>
+        <li><strong>Trainings by me</strong> for MB repairing including Yassine.</li>
+    </ul>
+</div>
+
+<!-- FedEx / DHL -->
+<div class="section green">
+    <h3>🚚 FedEx / DHL</h3>
+
+    <ul class="bullet-list">
+        <li><strong>Wagiha</strong> working on FedEx and DHL with my help and training.</li>
+        <li>He will be <strong>trained to take over</strong> from Poland side for FedEx and DHL.</li>
+    </ul>
+</div>
+
+<div class="footer">
+    Prepared & Presented by Zein — Production Director
+</div>
+
+</div>
+</body>
+</html>
