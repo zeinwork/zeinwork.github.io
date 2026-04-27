@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Attendance Ledger · Magnetic Card Report</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@300..800&family=JetBrains+Mono:wght@300..700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --paper:        #F6F2E9;
+    --paper-2:      #FBF8F1;
+    --ink:          #1A1815;
+    --ink-2:        #2E2A24;
+    --muted:        #847C6E;
+    --muted-2:      #B5AB99;
+    --rule:         #1A181522;
+    --rule-strong:  #1A181555;
+    --surface:      #FFFFFF;
+    --shadow-sm:    0 1px 0 #1a181508, 0 0 0 1px #1a181510;
+    --shadow-md:    0 1px 1px #1a181510, 0 4px 18px -8px #1a181522, 0 0 0 1px #1a181515;
+
+    --good:         #3F5F3F;
+    --good-tint:    #3F5F3F12;
+    --bad:          #8B2D2D;
+    --bad-tint:     #8B2D2D12;
+    --warn:         #A06A1F;
+    --warn-tint:    #A06A1F14;
+    --info:         #2C3E63;
+    --info-tint:    #2C3E6312;
+    --weekend:      #B5AB99;
+    --weekend-tint: #B5AB9920;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at top left, #fff8e8 0%, transparent 40%),
+      radial-gradient(ellipse at bottom right, #f0ead8 0%, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* subtle grain overlay for paper feel */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  .num { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum","zero"; }
+  .display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+
+  /* ============ LAYOUT ============ */
+  .wrap {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 28px 32px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 18px 0 14px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .masthead h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(34px, 4.5vw, 54px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .masthead .sub {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+  .mast-meta {
+    text-align: right;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .mast-meta strong {
+    display: block;
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============ BUTTONS / INPUTS ============ */
+  .btn {
+    appearance: none;
+    background: var(--ink);
+    color: var(--paper-2);
+    border: 1px solid var(--ink);
+    padding: 9px 16px;
+    font-family: inherit;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform .15s ease, background .2s;
+    border-radius: 0;
+  }
+  .btn:hover { transform: translateY(-1px); background: #000; }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn.ghost:hover { background: var(--ink); color: var(--paper-2); }
+
+  .btn.icon {
+    padding: 8px 10px;
+    font-size: 16px;
+    letter-spacing: 0;
+  }
+
+  input[type=text], input[type=time], input[type=number], select {
+    appearance: none;
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: 9px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    border-radius: 0;
+    width: 100%;
+  }
+  input:focus, select:focus { outline: 2px solid var(--ink); outline-offset: -2px; }
+  label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* ============ LOADER STATE ============ */
+  .loader {
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: 56px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+  .loader-spinner {
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: center;
+  }
+  .loader.dragging {
+    background: #FFFCF0;
+    border-style: dashed;
+    border-color: var(--ink);
+  }
+  .loader h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 28px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .loader p {
+    color: var(--muted);
+    margin: 0 0 24px;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  .loader .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .err {
+    background: var(--bad-tint);
+    border-left: 3px solid var(--bad);
+    padding: 10px 14px;
+    color: var(--bad);
+    font-size: 13px;
+    margin-top: 16px;
+    text-align: left;
+  }
+
+  /* ============ CONTROLS BAR ============ */
+  .controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    align-items: end;
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: 18px 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+  }
+  .controls.compact { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; }
+
+  /* ============ EMPLOYEE HERO ============ */
+  .hero {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .hero .name {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(40px, 6vw, 76px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin: 4px 0 8px;
+    font-variation-settings: "SOFT" 50;
+  }
+  .hero .name em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--muted);
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .hero .summary {
+    color: var(--muted);
+    font-size: 14px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .hero .summary span { display: inline-flex; align-items: center; gap: 6px; }
+  .hero .summary span::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: var(--muted);
+    border-radius: 50%;
+  }
+  .hero .summary span:first-child::before { display: none; }
+
+  /* ============ KPI CARDS ============ */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    margin-bottom: 32px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+  }
+  .kpi {
+    background: var(--surface);
+    padding: 18px 20px;
+    position: relative;
+  }
+  .kpi:not(:last-child) { border-right: 1px solid var(--ink); }
+  .kpi .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kpi .label .tag {
+    background: var(--ink);
+    color: var(--paper-2);
+    padding: 2px 6px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+  }
+  .kpi .label .tag.good { background: var(--good); }
+  .kpi .label .tag.bad { background: var(--bad); }
+  .kpi .label .tag.warn { background: var(--warn); }
+  .kpi .value {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .kpi .value.num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+  }
+  .kpi .sub {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0;
+  }
+  .kpi .sub.good { color: var(--good); }
+  .kpi .sub.bad { color: var(--bad); }
+  .kpi .sub.warn { color: var(--warn); }
+
+  /* ============ SECTION HEADERS ============ */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 36px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-head h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 26px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+  .section-head .meta {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  /* ============ CHARTS ============ */
+  .charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .chart-card h3 {
+    margin: 0 0 4px;
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 18px;
+  }
+  .chart-card .ann {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 14px;
+  }
+  .chart-host {
+    position: relative;
+    height: 240px;
+  }
+
+  /* ============ DAILY TABLE ============ */
+  .daily-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .daily-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--ink);
+    background: var(--paper-2);
+    position: sticky;
+    top: 0;
+  }
+  .daily-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .daily-table tr.weekend { background: var(--weekend-tint); color: var(--muted); font-style: italic; }
+  .daily-table tr.absent { background: var(--bad-tint); }
+  .daily-table tr.absent td { color: var(--bad); }
+  .daily-table tr.short td.hours-cell { color: var(--bad); font-weight: 500; }
+  .daily-table tr.over td.hours-cell { color: var(--good); font-weight: 500; }
+  .daily-table tr.late td.in-cell { color: var(--warn); font-weight: 500; }
+  .daily-table tfoot td {
+    font-weight: 600;
+    border-top: 2px solid var(--ink);
+    border-bottom: none;
+    background: var(--paper-2);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 600;
+  }
+  .badge.good { background: var(--good); color: white; }
+  .badge.bad { background: var(--bad); color: white; }
+  .badge.warn { background: var(--warn); color: white; }
+  .badge.info { background: var(--info); color: white; }
+  .badge.muted { background: var(--rule-strong); color: var(--ink); }
+
+  .delta-pos { color: var(--good); }
+  .delta-neg { color: var(--bad); }
+
+  /* ============ INSIGHTS ============ */
+  .insights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .insight::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--ink);
+  }
+  .insight.good::before { background: var(--good); }
+  .insight.bad::before { background: var(--bad); }
+  .insight.warn::before { background: var(--warn); }
+  .insight.info::before { background: var(--info); }
+  .insight h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .insight p {
+    margin: 4px 0 0;
+    color: var(--ink-2);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .insight .pill {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 2px 8px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* ============ EMPTY ============ */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+  }
+
+  /* ============ TOP TILE ============ */
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-bottom: 28px;
+    border: 1px solid var(--rule-strong);
+    background: var(--rule-strong);
+  }
+  .qstat {
+    background: var(--surface);
+    padding: 14px 18px;
+  }
+  .qstat .l {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .qstat .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ============ SETTINGS DRAWER ============ */
+  .settings-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    max-width: 92vw;
+    height: 100vh;
+    background: var(--paper-2);
+    border-left: 1px solid var(--ink);
+    box-shadow: -10px 0 40px -10px #1a181530;
+    transform: translateX(100%);
+    transition: transform .3s cubic-bezier(.5,0,.2,1);
+    z-index: 100;
+    padding: 28px 24px;
+    overflow-y: auto;
+  }
+  .settings-drawer.open { transform: translateX(0); }
+  .settings-drawer h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    margin: 0 0 16px;
+  }
+  .settings-drawer .field { margin-bottom: 18px; }
+  .settings-drawer .close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  .scrim {
+    position: fixed;
+    inset: 0;
+    background: #0006;
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+  }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 980px) {
+    .kpis { grid-template-columns: repeat(3, 1fr); border: none; background: transparent; gap: 1px; }
+    .kpi { border: 1px solid var(--rule-strong) !important; }
+    .charts { grid-template-columns: 1fr; }
+    .controls { grid-template-columns: 1fr 1fr; }
+    .insights { grid-template-columns: 1fr; }
+    .quick-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 16px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .controls { grid-template-columns: 1fr; }
+    .daily-table { font-size: 11px; }
+    .daily-table th, .daily-table td { padding: 8px 6px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: white; }
+    body::before { display: none; }
+    .controls, .loader, .settings-drawer, .scrim, .btn { display: none !important; }
+    .wrap { max-width: none; padding: 0; }
+    .chart-host { height: 200px; }
+    .kpis, .insights, .charts { page-break-inside: avoid; }
+  }
+
+  /* small util */
+  .row { display: flex; gap: 12px; align-items: center; }
+  .grow { flex: 1; }
+  .small-link {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div>
+      <div class="sub">Magnetic Card Activity · Daily Ledger</div>
+      <h1>Attendance <em>Ledger</em></h1>
+    </div>
+    <div class="mast-meta" id="mastMeta">
+      <div>Period</div>
+      <strong id="periodLabel">— no data loaded —</strong>
+      <div style="margin-top:6px">Records · Last refreshed</div>
+      <strong id="recordCount">0</strong>
+      <strong id="lastRefreshed" style="color:var(--muted); font-weight:400;">—</strong>
+    </div>
+  </header>
+
+  <!-- LOADER (initial state) -->
+  <section class="loader" id="loader">
+    <div class="loader-spinner" id="loaderSpinner">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="20" stroke="#1A181520" stroke-width="3"/>
+        <circle cx="24" cy="24" r="20" stroke="#1A1815" stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="30 100" transform="rotate(-90 24 24)">
+          <animateTransform attributeName="transform" type="rotate" from="-90 24 24" to="270 24 24" dur="1.1s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+    <h2 id="loaderTitle">Reading the ledger…</h2>
+    <p id="loaderText">
+      Pulling the latest scans from your Google Sheet. This will take a moment.
+    </p>
+    <div class="actions hidden" id="loaderRetry">
+      <button class="btn" id="btnRetry">↻ Try again</button>
+      <button class="btn ghost" id="btnUpload">Upload File Instead</button>
+      <button class="btn ghost" id="btnSample">Use Sample Data</button>
+    </div>
+    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden />
+    <div class="err hidden" id="loaderErr"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <main id="dashboard" class="hidden">
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <div>
+        <label>Employee</label>
+        <select id="employeeSelect"></select>
+      </div>
+      <div>
+        <label>Required hrs/day</label>
+        <input type="number" id="cfgHours" min="1" max="24" step="0.5" value="8" />
+      </div>
+      <div>
+        <label>Expected start</label>
+        <input type="time" id="cfgStart" value="08:00" />
+      </div>
+      <div>
+        <label>Grace (min)</label>
+        <input type="number" id="cfgGrace" min="0" max="60" step="1" value="5" />
+      </div>
+      <div class="row">
+        <button class="btn" id="btnReload" title="Refresh data from Google Sheet">↻ Refresh</button>
+        <button class="btn ghost icon" id="btnSettings" title="Settings">⚙</button>
+        <button class="btn ghost icon" id="btnPrint" title="Print">⎙</button>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero" id="hero"></section>
+
+    <!-- KPI CARDS -->
+    <section class="kpis" id="kpis"></section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+      <div class="chart-card">
+        <h3>Hours per day</h3>
+        <div class="ann">Bars below the line indicate days that fell short of the daily requirement.</div>
+        <div class="chart-host"><canvas id="hoursChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Arrival pattern</h3>
+        <div class="ann">When this person typically clocks in across the period.</div>
+        <div class="chart-host"><canvas id="arrivalChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <section class="quick-stats" id="quickStats"></section>
+
+    <!-- DAILY TABLE -->
+    <div class="section-head">
+      <h2>Daily breakdown</h2>
+      <div class="meta" id="tableMeta"></div>
+    </div>
+    <div style="overflow-x:auto; box-shadow: var(--shadow-sm); background: var(--surface);">
+      <table class="daily-table" id="dailyTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Day</th>
+            <th>First IN</th>
+            <th>Last OUT</th>
+            <th>Presence</th>
+            <th>Required</th>
+            <th>Δ vs Req</th>
+            <th>Scans</th>
+            <th>Notes</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dailyBody"></tbody>
+        <tfoot id="dailyFoot"></tfoot>
+      </table>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="section-head">
+      <h2>Patterns &amp; Insights</h2>
+      <div class="meta">Auto-generated observations</div>
+    </div>
+    <section class="insights" id="insights"></section>
+
+  </main>
+
+</div>
+
+<!-- SETTINGS DRAWER -->
+<div class="scrim" id="scrim"></div>
+<aside class="settings-drawer" id="settingsDrawer">
+  <button class="btn ghost icon close-btn" id="closeSettings">×</button>
+  <h3>Settings</h3>
+
+  <div class="field">
+    <label>Required hours per day</label>
+    <input type="number" id="setHours" min="1" max="24" step="0.5" value="8" />
+  </div>
+  <div class="field">
+    <label>Expected start time</label>
+    <input type="time" id="setStart" value="08:00" />
+  </div>
+  <div class="field">
+    <label>Grace period (minutes)</label>
+    <input type="number" id="setGrace" min="0" max="60" step="1" value="5" />
+  </div>
+  <div class="field">
+    <label>Working days</label>
+    <div id="weekdayPick" style="display:flex; gap:4px;"></div>
+  </div>
+  <div class="field">
+    <label>Treat very long days as suspicious (hours)</label>
+    <input type="number" id="setMaxHours" min="8" max="24" step="0.5" value="14" />
+  </div>
+
+  <div style="margin-top:24px; padding-top:20px; border-top:1px dashed var(--rule-strong);">
+    <label>Data source</label>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); word-break:break-all; line-height:1.5;" id="dataSourceLabel">—</div>
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn" id="refetchBtn">↻ Refresh now</button>
+      <button class="btn ghost" id="loadAnotherBtn">Upload file instead</button>
+    </div>
+    <div style="font-size:11px; color:var(--muted); margin-top:10px; line-height:1.5;">
+      The dashboard always reads from your Google Sheet. To update: paste the new month's data into the sheet, then refresh this page.
+    </div>
+  </div>
+
+  <div style="margin-top:24px; padding-top:20px; border-top:1px dashed var(--rule-strong); font-size:11px; color:var(--muted); line-height:1.6;">
+    <strong style="color:var(--ink); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:.14em; font-size:10px;">Note</strong>
+    Three-row scan duplicates are auto-deduplicated. Rows with employee name "None" are filtered. Hours are computed as Last OUT − First IN per calendar day.
+  </div>
+</aside>
+
+<script>
+"use strict";
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+// The Google Sheet is auto-loaded on every page visit.
+// To update the dashboard, paste new data into the sheet and refresh this page.
+// The sheet must be shared as "Anyone with the link can view".
+const SHEET_ID = '1QptANywnSG503nvcWbW2gy_-lleqpqHoXpNvc6unFko';
+const SHEET_GID = '0';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+const SHEET_HUMAN_LABEL = `Google Sheet · ${SHEET_ID.slice(0, 8)}…`;
+
+// ============================================================================
+// STATE
+// ============================================================================
+const state = {
+  rawScans: [],
+  employees: [],
+  selectedEmployee: null,
+  periodStart: null,
+  periodEnd: null,
+  fileLabel: '',
+  lastRefreshed: null,
+  config: {
+    requiredHours: 8,
+    expectedStart: '08:00',
+    graceMinutes: 5,
+    workdays: [1, 2, 3, 4, 5], // Mon-Fri
+    maxHours: 14,
+  },
+  charts: {},
+};
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+function $(id) { return document.getElementById(id); }
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function formatDateKey(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+function formatTime(d) {
+  return pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function formatTimeSec(d) {
+  return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+function formatDateShort(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function formatDayName(d) {
+  return d.toLocaleDateString('en-US', { weekday: 'short' });
+}
+function isWeekend(d) {
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+function hoursToHM(h) {
+  if (!isFinite(h) || h <= 0) return '0h 00m';
+  const totalMin = Math.round(h * 60);
+  const H = Math.floor(totalMin / 60);
+  const M = totalMin % 60;
+  return H + 'h ' + pad(M) + 'm';
+}
+function minutesFromMidnight(d) {
+  return d.getHours() * 60 + d.getMinutes();
+}
+function timeStrToMinutes(s) {
+  const [h, m] = s.split(':').map(Number);
+  return h * 60 + m;
+}
+
+// Parse "7/16/2025 3:57:39 PM" reliably
+function parseTimestampString(s) {
+  if (!s) return null;
+  s = String(s).trim();
+  // Pattern: M/D/YYYY h:mm:ss AM/PM  (or 24h without AM/PM)
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM|am|pm)?$/);
+  if (!m) {
+    // Try without seconds
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?$/);
+    if (m) m = [m[0], m[1], m[2], m[3], m[4], m[5], '00', m[6]];
+  }
+  if (!m) {
+    // Try ISO
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  let [, mo, da, yr, hh, mi, ss, ap] = m;
+  let hour = parseInt(hh, 10);
+  if (ap) {
+    const ampm = ap.toUpperCase();
+    if (ampm === 'PM' && hour !== 12) hour += 12;
+    if (ampm === 'AM' && hour === 12) hour = 0;
+  }
+  return new Date(parseInt(yr, 10), parseInt(mo, 10) - 1, parseInt(da, 10),
+                  hour, parseInt(mi, 10), parseInt(ss, 10));
+}
+
+function parseAnyTimestamp(v) {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  if (typeof v === 'number') {
+    // Excel serial date
+    const d = XLSX.SSF.parse_date_code(v);
+    if (d) return new Date(d.y, d.m - 1, d.d, d.H || 0, d.M || 0, Math.floor(d.S || 0));
+    return null;
+  }
+  return parseTimestampString(String(v));
+}
+
+// ============================================================================
+// DATA INGEST
+// ============================================================================
+function ingestRows(rows, label) {
+  const dedup = new Map();
+  for (const row of rows) {
+    if (!row || row.length < 2) continue;
+    const tsRaw = row[0];
+    const nameRaw = row[1];
+    if (tsRaw == null || nameRaw == null) continue;
+    const name = String(nameRaw).trim();
+    if (!name || name.toLowerCase() === 'none' || name === '—') continue;
+    const ts = parseAnyTimestamp(tsRaw);
+    if (!ts) continue;
+    const key = ts.getTime() + '|' + name;
+    if (!dedup.has(key)) dedup.set(key, { timestamp: ts, name });
+  }
+  if (dedup.size === 0) {
+    throw new Error('No valid scan records found. Expected columns: [Timestamp] [Employee Name].');
+  }
+  state.rawScans = Array.from(dedup.values()).sort((a, b) => a.timestamp - b.timestamp);
+  state.employees = Array.from(new Set(state.rawScans.map(s => s.name))).sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' })
+  );
+  state.periodStart = state.rawScans[0].timestamp;
+  state.periodEnd = state.rawScans[state.rawScans.length - 1].timestamp;
+  state.fileLabel = label;
+  if (!state.lastRefreshed) state.lastRefreshed = new Date();
+  // Pick the employee with the most scans by default — likely the most active worker
+  const counts = new Map();
+  for (const s of state.rawScans) counts.set(s.name, (counts.get(s.name) || 0) + 1);
+  state.selectedEmployee = state.employees.reduce(
+    (best, n) => (counts.get(n) > (counts.get(best) || 0) ? n : best),
+    state.employees[0]
+  );
+  showDashboard();
+}
+
+function loadFile(file) {
+  $('loaderErr').classList.add('hidden');
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = e.target.result;
+      const wb = XLSX.read(data, { type: 'array', cellDates: true });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+      ingestRows(rows, file.name);
+    } catch (err) {
+      console.error(err);
+      showError('Couldn\'t parse this file: ' + err.message);
+    }
+  };
+  reader.onerror = () => showError('Could not read the file.');
+  reader.readAsArrayBuffer(file);
+}
+
+function fetchSheet() {
+  // Clear last refreshed so it reflects this fetch
+  state.lastRefreshed = null;
+  // Show the loading state
+  showLoaderState('loading');
+  // Cache-bust so refresh always pulls fresh data
+  const url = SHEET_URL + '&_=' + Date.now();
+  fetch(url, { mode: 'cors', cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' — make sure the sheet is shared as "Anyone with the link can view"');
+      return r.text();
+    })
+    .then(text => {
+      if (!text || text.trim().length < 10) throw new Error('The sheet appears to be empty.');
+      const wb = XLSX.read(text, { type: 'string', cellDates: true });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+      state.lastRefreshed = new Date();
+      ingestRows(rows, SHEET_HUMAN_LABEL);
+    })
+    .catch(err => {
+      console.error('Sheet fetch failed:', err);
+      showLoaderState('error', err.message);
+    });
+}
+
+function showLoaderState(mode, errMsg) {
+  const loader = $('loader');
+  const spinner = $('loaderSpinner');
+  const title = $('loaderTitle');
+  const text = $('loaderText');
+  const retry = $('loaderRetry');
+  const errBox = $('loaderErr');
+
+  $('dashboard').classList.add('hidden');
+  loader.classList.remove('hidden');
+
+  if (mode === 'loading') {
+    spinner.classList.remove('hidden');
+    title.textContent = 'Reading the ledger…';
+    text.textContent = 'Pulling the latest scans from your Google Sheet. This will take a moment.';
+    retry.classList.add('hidden');
+    errBox.classList.add('hidden');
+  } else if (mode === 'error') {
+    spinner.classList.add('hidden');
+    title.textContent = 'Couldn\'t reach the sheet';
+    text.textContent = 'The dashboard tries to read from your Google Sheet on every page load. Check that the sheet is shared correctly, then try again.';
+    retry.classList.remove('hidden');
+    errBox.textContent = errMsg || 'Unknown error';
+    errBox.classList.remove('hidden');
+  }
+}
+
+function showError(msg) {
+  // Legacy single-line error (still used by file upload fallback)
+  const el = $('loaderErr');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// ============================================================================
+// REPORT BUILDING
+// ============================================================================
+function buildReport(employee, cfg) {
+  const userScans = state.rawScans.filter(s => s.name === employee);
+  if (!userScans.length) return null;
+
+  // Group by date
+  const byDate = new Map();
+  for (const s of userScans) {
+    const k = formatDateKey(s.timestamp);
+    if (!byDate.has(k)) byDate.set(k, []);
+    byDate.get(k).push(s);
+  }
+
+  // Build day records spanning the full period
+  const start = new Date(state.periodStart.getFullYear(), state.periodStart.getMonth(), state.periodStart.getDate());
+  const end = new Date(state.periodEnd.getFullYear(), state.periodEnd.getMonth(), state.periodEnd.getDate());
+  const days = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const k = formatDateKey(d);
+    const list = byDate.get(k);
+    const dayDate = new Date(d);
+    const expectedWorkday = cfg.workdays.includes(dayDate.getDay());
+    if (!list || list.length === 0) {
+      days.push({
+        date: dayDate, dateKey: k, expectedWorkday, weekend: isWeekend(dayDate),
+        scans: [], firstIn: null, lastOut: null, presenceHours: 0,
+        scanCount: 0, isComplete: false, isAbsent: expectedWorkday,
+        isLate: false, lateMinutes: 0, deltaHours: expectedWorkday ? -cfg.requiredHours : 0,
+        suspicious: false, longestGapMin: 0,
+      });
+      continue;
+    }
+    list.sort((a, b) => a.timestamp - b.timestamp);
+    const firstIn = list[0].timestamp;
+    const lastOut = list[list.length - 1].timestamp;
+    const presenceHours = (lastOut - firstIn) / 3600000;
+    const isComplete = list.length > 1;
+
+    const startMin = timeStrToMinutes(cfg.expectedStart);
+    const inMin = minutesFromMidnight(firstIn);
+    const isLate = expectedWorkday && (inMin > startMin + cfg.graceMinutes);
+    const lateMinutes = isLate ? inMin - startMin : 0;
+
+    let longestGapMin = 0;
+    for (let i = 1; i < list.length; i++) {
+      const g = (list[i].timestamp - list[i - 1].timestamp) / 60000;
+      if (g > longestGapMin) longestGapMin = g;
+    }
+
+    const required = expectedWorkday ? cfg.requiredHours : 0;
+    const effectiveHours = isComplete ? presenceHours : 0;
+    const deltaHours = effectiveHours - required;
+    const suspicious = presenceHours > cfg.maxHours;
+
+    days.push({
+      date: dayDate, dateKey: k, expectedWorkday, weekend: isWeekend(dayDate),
+      scans: list, firstIn, lastOut, presenceHours, scanCount: list.length,
+      isComplete, isAbsent: false, isLate, lateMinutes, deltaHours, suspicious, longestGapMin,
+    });
+  }
+
+  // Summary
+  const workedDays = days.filter(d => d.scanCount > 0);
+  const presentWorkdays = workedDays.filter(d => d.expectedWorkday);
+  const expectedWorkdays = days.filter(d => d.expectedWorkday).length;
+  const absentDays = days.filter(d => d.isAbsent).length;
+
+  const totalPresence = workedDays.reduce((s, d) => s + d.presenceHours, 0);
+  const requiredTotal = expectedWorkdays * cfg.requiredHours;
+  const lateDays = workedDays.filter(d => d.isLate);
+  const totalLateMin = lateDays.reduce((s, d) => s + d.lateMinutes, 0);
+  const shortDays = workedDays.filter(d => d.expectedWorkday && d.deltaHours < 0 && d.isComplete);
+  const overDays = workedDays.filter(d => d.expectedWorkday && d.deltaHours > 0 && d.isComplete);
+  const missingHoursTotal = shortDays.reduce((s, d) => s + Math.abs(d.deltaHours), 0)
+                          + days.filter(d => d.isAbsent).reduce((s, d) => s + cfg.requiredHours, 0)
+                          + workedDays.filter(d => d.expectedWorkday && !d.isComplete).reduce((s, d) => s + cfg.requiredHours, 0);
+  const overtimeTotal = overDays.reduce((s, d) => s + d.deltaHours, 0);
+  const weekendDays = workedDays.filter(d => d.weekend).length;
+
+  const completeWorkdays = presentWorkdays.filter(d => d.isComplete);
+  const avgArrival = completeWorkdays.length
+    ? completeWorkdays.reduce((s, d) => s + minutesFromMidnight(d.firstIn), 0) / completeWorkdays.length
+    : null;
+  const avgDeparture = completeWorkdays.length
+    ? completeWorkdays.reduce((s, d) => s + minutesFromMidnight(d.lastOut), 0) / completeWorkdays.length
+    : null;
+
+  let earliest = null, latest = null, longestDay = null, shortestDay = null;
+  for (const d of presentWorkdays) {
+    if (!d.isComplete) continue;
+    if (!earliest || d.firstIn.getHours() * 60 + d.firstIn.getMinutes() < earliest.firstIn.getHours() * 60 + earliest.firstIn.getMinutes()) earliest = d;
+    if (!latest || d.lastOut.getHours() * 60 + d.lastOut.getMinutes() > latest.lastOut.getHours() * 60 + latest.lastOut.getMinutes()) latest = d;
+    if (!longestDay || d.presenceHours > longestDay.presenceHours) longestDay = d;
+    if (!shortestDay || d.presenceHours < shortestDay.presenceHours) shortestDay = d;
+  }
+
+  // On-time streaks
+  let curStreak = 0, maxStreak = 0;
+  for (const d of days) {
+    if (!d.expectedWorkday) continue;
+    if (d.scanCount > 0 && !d.isLate && d.isComplete) {
+      curStreak++;
+      if (curStreak > maxStreak) maxStreak = curStreak;
+    } else {
+      curStreak = 0;
+    }
+  }
+
+  // Most common arrival hour
+  const hourBuckets = new Map();
+  for (const d of completeWorkdays) {
+    const h = d.firstIn.getHours();
+    hourBuckets.set(h, (hourBuckets.get(h) || 0) + 1);
+  }
+  let modeHour = null, modeCount = 0;
+  for (const [h, c] of hourBuckets) {
+    if (c > modeCount) { modeHour = h; modeCount = c; }
+  }
+
+  // Day-of-week patterns
+  const dowStats = [0, 1, 2, 3, 4, 5, 6].map(dow => {
+    const d = completeWorkdays.filter(x => x.date.getDay() === dow);
+    const lateOnDow = d.filter(x => x.isLate).length;
+    return {
+      dow,
+      name: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dow],
+      count: d.length,
+      avgHours: d.length ? d.reduce((s, x) => s + x.presenceHours, 0) / d.length : 0,
+      avgArrival: d.length ? d.reduce((s, x) => s + minutesFromMidnight(x.firstIn), 0) / d.length : null,
+      lateRate: d.length ? lateOnDow / d.length : 0,
+    };
+  });
+
+  // Activity (avg scan count per day)
+  const avgScans = workedDays.length
+    ? workedDays.reduce((s, d) => s + d.scanCount, 0) / workedDays.length
+    : 0;
+
+  // Lateness severity buckets
+  const lateBuckets = { mild: 0, moderate: 0, severe: 0 };
+  for (const d of lateDays) {
+    if (d.lateMinutes <= 15) lateBuckets.mild++;
+    else if (d.lateMinutes <= 30) lateBuckets.moderate++;
+    else lateBuckets.severe++;
+  }
+
+  // Suspicious / incomplete days
+  const suspiciousDays = workedDays.filter(d => d.suspicious);
+  const incompleteDays = workedDays.filter(d => !d.isComplete);
+
+  return {
+    days,
+    summary: {
+      totalPresence,
+      requiredTotal,
+      delta: totalPresence - requiredTotal,
+      missingHoursTotal,
+      overtimeTotal,
+      workedDays: workedDays.length,
+      presentWorkdays: presentWorkdays.length,
+      expectedWorkdays,
+      absentDays,
+      lateDays: lateDays.length,
+      totalLateMin,
+      shortDays: shortDays.length,
+      overDays: overDays.length,
+      weekendDays,
+      avgArrival, avgDeparture,
+      earliest, latest, longestDay, shortestDay,
+      maxStreak, modeHour, modeCount,
+      dowStats, avgScans, lateBuckets,
+      suspiciousDays, incompleteDays,
+    }
+  };
+}
+
+// ============================================================================
+// RENDERING
+// ============================================================================
+function showDashboard() {
+  $('loader').classList.add('hidden');
+  $('dashboard').classList.remove('hidden');
+  $('recordCount').textContent = state.rawScans.length.toLocaleString() + ' scans';
+  $('periodLabel').textContent = formatDateShort(state.periodStart) + ' – ' + formatDateShort(state.periodEnd) +
+    ', ' + state.periodEnd.getFullYear();
+  if (state.lastRefreshed) {
+    $('lastRefreshed').textContent = state.lastRefreshed.toLocaleString('en-GB', {
+      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+    });
+  }
+  $('dataSourceLabel').textContent = state.fileLabel + (state.lastRefreshed ? ' · refreshed ' + state.lastRefreshed.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '');
+
+  // Populate employee select
+  const sel = $('employeeSelect');
+  sel.innerHTML = state.employees.map(e =>
+    `<option value="${escapeHtml(e)}" ${e === state.selectedEmployee ? 'selected' : ''}>${escapeHtml(e)}</option>`
+  ).join('');
+
+  refresh();
+}
+
+function refresh() {
+  const report = buildReport(state.selectedEmployee, state.config);
+  if (!report) {
+    $('hero').innerHTML = '<div class="empty">No scans for this employee.</div>';
+    $('kpis').innerHTML = '';
+    return;
+  }
+  renderHero(report);
+  renderKpis(report);
+  renderQuickStats(report);
+  renderDailyTable(report);
+  renderInsights(report);
+  renderHoursChart(report);
+  renderArrivalChart(report);
+  $('tableMeta').textContent = report.days.length + ' calendar days';
+}
+
+function renderHero(report) {
+  const s = report.summary;
+  const lastScan = state.rawScans.filter(x => x.name === state.selectedEmployee).slice(-1)[0];
+  const parts = [];
+  parts.push(`<span><strong style="color:var(--ink);">${s.workedDays}</strong> active days</span>`);
+  parts.push(`<span><strong style="color:var(--ink);">${s.expectedWorkdays}</strong> expected workdays</span>`);
+  if (lastScan) parts.push(`<span>last scan ${formatDateShort(lastScan.timestamp)}, ${formatTime(lastScan.timestamp)}</span>`);
+  if (s.modeHour != null) parts.push(`<span>typical arrival ~ ${pad(s.modeHour)}:00</span>`);
+
+  // Split name into first / last for italic styling
+  const name = state.selectedEmployee;
+  const split = name.split(' ');
+  let nameHtml;
+  if (split.length >= 2) {
+    nameHtml = escapeHtml(split[0]) + ' <em>' + escapeHtml(split.slice(1).join(' ')) + '</em>';
+  } else {
+    nameHtml = escapeHtml(name);
+  }
+
+  $('hero').innerHTML = `
+    <div class="sub" style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);font-weight:600;">Employee Dossier</div>
+    <div class="name">${nameHtml}</div>
+    <div class="summary">${parts.join('')}</div>
+  `;
+}
+
+function renderKpis(report) {
+  const s = report.summary;
+  const cfg = state.config;
+
+  const cards = [];
+
+  // 1. Total presence
+  {
+    const pct = s.requiredTotal ? Math.round((s.totalPresence / s.requiredTotal) * 100) : 0;
+    const tag = s.delta >= 0 ? `<span class="tag good">${pct}%</span>` : `<span class="tag bad">${pct}%</span>`;
+    cards.push(`
+      <div class="kpi">
+        <div class="label">Total presence ${tag}</div>
+        <div class="value">${hoursToHM(s.totalPresence)}</div>
+        <div class="sub">of ${hoursToHM(s.requiredTotal)} required</div>
+      </div>
+    `);
+  }
+
+  // 2. Missing / overtime
+  {
+    const isShort = s.delta < 0;
+    cards.push(`
+      <div class="kpi">
+        <div class="label">${isShort ? 'Hours owed' : 'Overtime'}
+          <span class="tag ${isShort ? 'bad' : 'good'}">${isShort ? '−' : '+'}</span>
+        </div>
+        <div class="value ${isShort ? 'num' : 'num'}" style="color:${isShort ? 'var(--bad)' : 'var(--good)'}">
+          ${isShort ? '−' : '+'}${hoursToHM(Math.abs(s.delta))}
+        </div>
+        <div class="sub ${isShort ? 'bad' : 'good'}">
+          ${isShort ? hoursToHM(s.missingHoursTotal) + ' total deficit' : hoursToHM(s.overtimeTotal) + ' across ' + s.overDays + ' days'}
+        </div>
+      </div>
+    `);
+  }
+
+  // 3. Late
+  {
+    const lateLabel = s.lateDays > 0 ? `<span class="tag warn">${s.totalLateMin}m</span>` : '<span class="tag good">✓</span>';
+    cards.push(`
+      <div class="kpi">
+        <div class="label">Late arrivals ${lateLabel}</div>
+        <div class="value num">${s.lateDays}</div>
+        <div class="sub ${s.lateDays > 0 ? 'warn' : 'good'}">
+          ${s.lateDays > 0 ? 'mild ' + s.lateBuckets.mild + ' · mod ' + s.lateBuckets.moderate + ' · severe ' + s.lateBuckets.severe : 'never late after ' + cfg.expectedStart}
+        </div>
+      </div>
+    `);
+  }
+
+  // 4. Avg arrival
+  {
+    const av = s.avgArrival != null ? minToHm(s.avgArrival) : '—';
+    const expectedM = timeStrToMinutes(cfg.expectedStart);
+    const deltaM = s.avgArrival != null ? Math.round(s.avgArrival - expectedM) : 0;
+    const deltaTxt = s.avgArrival == null ? '' :
+      deltaM === 0 ? 'right on time' :
+      deltaM > 0 ? '+' + deltaM + 'm vs ' + cfg.expectedStart :
+      deltaM + 'm vs ' + cfg.expectedStart;
+    const cls = deltaM > cfg.graceMinutes ? 'warn' : 'good';
+    cards.push(`
+      <div class="kpi">
+        <div class="label">Avg arrival</div>
+        <div class="value num">${av}</div>
+        <div class="sub ${cls}">${deltaTxt}</div>
+      </div>
+    `);
+  }
+
+  // 5. Avg departure
+  {
+    const av = s.avgDeparture != null ? minToHm(s.avgDeparture) : '—';
+    cards.push(`
+      <div class="kpi">
+        <div class="label">Avg departure</div>
+        <div class="value num">${av}</div>
+        <div class="sub">${s.avgDeparture != null ? 'across ' + s.workedDays + ' days' : ''}</div>
+      </div>
+    `);
+  }
+
+  // 6. Days worked / streak
+  {
+    cards.push(`
+      <div class="kpi">
+        <div class="label">Days worked
+          <span class="tag">${s.absentDays} absent</span>
+        </div>
+        <div class="value num">${s.workedDays} <span style="font-size:14px; color:var(--muted);">/ ${s.expectedWorkdays}</span></div>
+        <div class="sub">${s.maxStreak > 0 ? 'best streak ' + s.maxStreak + ' on-time days' : '—'}</div>
+      </div>
+    `);
+  }
+
+  $('kpis').innerHTML = cards.join('');
+}
+
+function renderQuickStats(report) {
+  const s = report.summary;
+  const items = [
+    {
+      l: 'Earliest in',
+      v: s.earliest ? formatTime(s.earliest.firstIn) + ' · ' + formatDateShort(s.earliest.date) : '—'
+    },
+    {
+      l: 'Latest out',
+      v: s.latest ? formatTime(s.latest.lastOut) + ' · ' + formatDateShort(s.latest.date) : '—'
+    },
+    {
+      l: 'Longest day',
+      v: s.longestDay ? hoursToHM(s.longestDay.presenceHours) + ' · ' + formatDateShort(s.longestDay.date) : '—'
+    },
+    {
+      l: 'Avg activity / day',
+      v: s.avgScans.toFixed(1) + ' scans'
+    },
+  ];
+  $('quickStats').innerHTML = items.map(i =>
+    `<div class="qstat"><div class="l">${i.l}</div><div class="v">${escapeHtml(i.v)}</div></div>`
+  ).join('');
+}
+
+function renderDailyTable(report) {
+  const cfg = state.config;
+  const rows = [];
+  for (const d of report.days) {
+    if (d.isAbsent) {
+      rows.push(`
+        <tr class="absent">
+          <td>${formatDateShort(d.date)}</td>
+          <td>${formatDayName(d.date)}</td>
+          <td>—</td>
+          <td>—</td>
+          <td class="hours-cell">—</td>
+          <td>${hoursToHM(cfg.requiredHours)}</td>
+          <td class="delta-neg">−${hoursToHM(cfg.requiredHours)}</td>
+          <td>0</td>
+          <td>No card scans</td>
+          <td><span class="badge bad">Absent</span></td>
+        </tr>
+      `);
+      continue;
+    }
+    if (d.scanCount === 0) {
+      rows.push(`
+        <tr class="weekend">
+          <td>${formatDateShort(d.date)}</td>
+          <td>${formatDayName(d.date)}</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>0</td>
+          <td>${d.weekend ? 'Weekend' : 'Off-day'}</td>
+          <td><span class="badge muted">Off</span></td>
+        </tr>
+      `);
+      continue;
+    }
+    const required = d.expectedWorkday ? cfg.requiredHours : 0;
+    const deltaTxt = !d.isComplete ? '—' :
+      d.deltaHours >= 0 ? '+' + hoursToHM(d.deltaHours) : '−' + hoursToHM(Math.abs(d.deltaHours));
+    const deltaCls = !d.isComplete ? '' : (d.deltaHours >= 0 ? 'delta-pos' : 'delta-neg');
+
+    let trClass = '';
+    if (d.weekend) trClass += ' weekend';
+    if (d.isLate) trClass += ' late';
+    if (d.isComplete && d.expectedWorkday && d.deltaHours < 0) trClass += ' short';
+    if (d.isComplete && d.expectedWorkday && d.deltaHours > 0) trClass += ' over';
+
+    let badge;
+    if (!d.isComplete) badge = '<span class="badge warn">Incomplete</span>';
+    else if (d.suspicious) badge = '<span class="badge warn">Check</span>';
+    else if (d.weekend) badge = '<span class="badge info">Weekend</span>';
+    else if (d.isLate && d.deltaHours < 0) badge = '<span class="badge bad">Late · Short</span>';
+    else if (d.isLate) badge = '<span class="badge warn">Late</span>';
+    else if (d.deltaHours < 0) badge = '<span class="badge bad">Short</span>';
+    else if (d.deltaHours > 0) badge = '<span class="badge good">Over</span>';
+    else badge = '<span class="badge good">OK</span>';
+
+    const notes = [];
+    if (d.isLate) notes.push(d.lateMinutes + 'm late');
+    if (!d.isComplete) notes.push('only ' + d.scanCount + ' scan');
+    if (d.suspicious) notes.push('long span');
+    if (d.weekend && d.scanCount > 0) notes.push('weekend work');
+    if (d.longestGapMin > 90 && d.scanCount > 2) notes.push('break ' + Math.round(d.longestGapMin) + 'm');
+
+    rows.push(`
+      <tr class="${trClass.trim()}">
+        <td>${formatDateShort(d.date)}</td>
+        <td>${formatDayName(d.date)}</td>
+        <td class="in-cell">${formatTime(d.firstIn)}</td>
+        <td>${d.isComplete ? formatTime(d.lastOut) : '—'}</td>
+        <td class="hours-cell">${d.isComplete ? hoursToHM(d.presenceHours) : '—'}</td>
+        <td>${required ? hoursToHM(required) : '—'}</td>
+        <td class="${deltaCls}">${deltaTxt}</td>
+        <td>${d.scanCount}</td>
+        <td style="color:var(--muted); font-family: 'Inter Tight', sans-serif; font-size:12px;">${notes.join(' · ') || '—'}</td>
+        <td>${badge}</td>
+      </tr>
+    `);
+  }
+
+  const s = report.summary;
+  const footer = `
+    <tr>
+      <td colspan="4" style="text-align:right; text-transform:uppercase; letter-spacing:.14em; font-size:11px;">Totals</td>
+      <td>${hoursToHM(s.totalPresence)}</td>
+      <td>${hoursToHM(s.requiredTotal)}</td>
+      <td class="${s.delta >= 0 ? 'delta-pos' : 'delta-neg'}">${s.delta >= 0 ? '+' : '−'}${hoursToHM(Math.abs(s.delta))}</td>
+      <td colspan="3" style="font-family:'Inter Tight';font-size:12px;">
+        ${s.delta < 0 ? '<strong style="color:var(--bad)">Owed: ' + hoursToHM(s.missingHoursTotal) + '</strong>' : ''}
+        ${s.overtimeTotal > 0 ? ' · <span style="color:var(--good)">Overtime: ' + hoursToHM(s.overtimeTotal) + '</span>' : ''}
+      </td>
+    </tr>
+  `;
+
+  $('dailyBody').innerHTML = rows.join('');
+  $('dailyFoot').innerHTML = footer;
+}
+
+function renderInsights(report) {
+  const s = report.summary;
+  const cfg = state.config;
+  const insights = [];
+
+  // Punctuality narrative
+  if (s.lateDays === 0 && s.workedDays > 0) {
+    insights.push({ kind: 'good', title: 'Perfect punctuality',
+      body: `Never arrived later than <span class="pill">${cfg.expectedStart}</span> + ${cfg.graceMinutes}m grace across ${s.workedDays} active days. Best on-time streak: <strong>${s.maxStreak}</strong> days.` });
+  } else if (s.lateDays > 0) {
+    const sev = s.lateBuckets.severe > 0
+      ? `${s.lateBuckets.severe} days more than 30 minutes late`
+      : (s.lateBuckets.moderate > 0 ? `${s.lateBuckets.moderate} days 15–30m late` : `${s.lateBuckets.mild} mild lates (≤15m)`);
+    const kind = s.lateBuckets.severe > 0 ? 'bad' : (s.lateBuckets.moderate > 0 ? 'warn' : 'info');
+    insights.push({ kind, title: 'Lateness profile',
+      body: `Late <strong>${s.lateDays}</strong> times for a total of <strong>${s.totalLateMin} minutes</strong>. ${sev}. Best on-time streak: ${s.maxStreak} days.` });
+  }
+
+  // Day-of-week pattern
+  const workingDows = s.dowStats.filter(d => cfg.workdays.includes(d.dow) && d.count > 0);
+  if (workingDows.length >= 2) {
+    workingDows.sort((a, b) => a.avgArrival - b.avgArrival);
+    const earliest = workingDows[0];
+    const latest = workingDows[workingDows.length - 1];
+    if (latest.avgArrival - earliest.avgArrival > 15) {
+      insights.push({
+        kind: 'info',
+        title: 'Day-of-week tells a story',
+        body: `Earliest on <strong>${earliest.name}</strong> (~${minToHm(earliest.avgArrival)}), latest on <strong>${latest.name}</strong> (~${minToHm(latest.avgArrival)}). Difference of ${Math.round(latest.avgArrival - earliest.avgArrival)} minutes between best and worst day.`
+      });
+    }
+  }
+
+  // Most-late day-of-week
+  const dowLate = s.dowStats.filter(d => cfg.workdays.includes(d.dow) && d.count >= 2);
+  if (dowLate.length) {
+    dowLate.sort((a, b) => b.lateRate - a.lateRate);
+    if (dowLate[0].lateRate > 0.3) {
+      insights.push({
+        kind: 'warn',
+        title: 'Slowest morning',
+        body: `<strong>${dowLate[0].name}</strong> is the day this person struggles most — late ${Math.round(dowLate[0].lateRate * 100)}% of the time (${Math.round(dowLate[0].lateRate * dowLate[0].count)}/${dowLate[0].count}).`
+      });
+    }
+  }
+
+  // Earliest / Latest
+  if (s.earliest && s.latest) {
+    insights.push({
+      kind: 'info',
+      title: 'Range of the period',
+      body: `Earliest scan-in <span class="pill">${formatTime(s.earliest.firstIn)}</span> on ${formatDateShort(s.earliest.date)}. Latest scan-out <span class="pill">${formatTime(s.latest.lastOut)}</span> on ${formatDateShort(s.latest.date)}.`
+    });
+  }
+
+  // Longest / Shortest day
+  if (s.longestDay && s.shortestDay && s.longestDay !== s.shortestDay) {
+    insights.push({
+      kind: 'info',
+      title: 'Day-length spread',
+      body: `Longest day ${hoursToHM(s.longestDay.presenceHours)} on ${formatDateShort(s.longestDay.date)} · shortest complete day ${hoursToHM(s.shortestDay.presenceHours)} on ${formatDateShort(s.shortestDay.date)}.`
+    });
+  }
+
+  // Weekend work
+  if (s.weekendDays > 0) {
+    insights.push({
+      kind: 'info',
+      title: 'Worked on weekends',
+      body: `Came in on <strong>${s.weekendDays}</strong> ${s.weekendDays === 1 ? 'weekend day' : 'weekend days'} during this period — worth checking whether that should be paid as overtime.`
+    });
+  }
+
+  // Absences
+  if (s.absentDays > 0) {
+    insights.push({
+      kind: 'bad',
+      title: 'Missing days',
+      body: `<strong>${s.absentDays}</strong> expected workday${s.absentDays === 1 ? '' : 's'} with zero scans — accounting for ${hoursToHM(s.absentDays * cfg.requiredHours)} of the deficit.`
+    });
+  }
+
+  // Incomplete
+  if (s.incompleteDays.length > 0) {
+    insights.push({
+      kind: 'warn',
+      title: 'Days with only one scan',
+      body: `<strong>${s.incompleteDays.length}</strong> day${s.incompleteDays.length === 1 ? '' : 's'} with a single scan — likely a missed scan-out (${s.incompleteDays.slice(0, 4).map(d => formatDateShort(d.date)).join(', ')}${s.incompleteDays.length > 4 ? '…' : ''}). Hours can\'t be reliably computed for these.`
+    });
+  }
+
+  // Suspicious days
+  if (s.suspiciousDays.length > 0) {
+    insights.push({
+      kind: 'warn',
+      title: 'Unusually long days',
+      body: `<strong>${s.suspiciousDays.length}</strong> day${s.suspiciousDays.length === 1 ? '' : 's'} over ${cfg.maxHours}h of presence — possibly a missing intermediate scan-out, or a genuinely long shift. Check ${s.suspiciousDays.slice(0, 3).map(d => formatDateShort(d.date)).join(', ')}.`
+    });
+  }
+
+  // Activity profile
+  if (s.avgScans >= 6) {
+    insights.push({
+      kind: 'info',
+      title: 'High movement profile',
+      body: `Averages <strong>${s.avgScans.toFixed(1)} scans/day</strong> — moves between zones a lot. Could indicate cross-floor responsibilities or frequent breaks.`
+    });
+  } else if (s.avgScans <= 2.5 && s.workedDays > 3) {
+    insights.push({
+      kind: 'info',
+      title: 'Sedentary profile',
+      body: `Averages just <strong>${s.avgScans.toFixed(1)} scans/day</strong> — typically scans in and out and stays in one zone. Consistent with a desk-bound role.`
+    });
+  }
+
+  // Overall verdict
+  if (s.delta < -cfg.requiredHours * 2) {
+    insights.push({
+      kind: 'bad',
+      title: 'Significant deficit',
+      body: `Total presence is <strong>${hoursToHM(Math.abs(s.delta))} below</strong> the contractual requirement for this period.`
+    });
+  } else if (s.delta > cfg.requiredHours * 2) {
+    insights.push({
+      kind: 'good',
+      title: 'Strong contribution',
+      body: `Total presence exceeds the requirement by <strong>${hoursToHM(s.delta)}</strong> across the period.`
+    });
+  }
+
+  $('insights').innerHTML = insights.map(i => `
+    <div class="insight ${i.kind}">
+      <h4>${i.title}</h4>
+      <p>${i.body}</p>
+    </div>
+  `).join('') || '<div class="empty">No notable patterns yet — load more data.</div>';
+}
+
+// ============================================================================
+// CHARTS
+// ============================================================================
+function destroyChart(key) {
+  if (state.charts[key]) {
+    state.charts[key].destroy();
+    state.charts[key] = null;
+  }
+}
+
+function renderHoursChart(report) {
+  destroyChart('hours');
+  const cfg = state.config;
+  const labels = report.days.map(d => d.date.getDate() + ' ' + formatDayName(d.date).slice(0, 1));
+  const data = report.days.map(d => d.isComplete ? +d.presenceHours.toFixed(2) : 0);
+  const colors = report.days.map(d => {
+    if (!d.expectedWorkday) return '#B5AB99';
+    if (d.isAbsent) return '#8B2D2D';
+    if (!d.isComplete) return '#A06A1F';
+    if (d.presenceHours < cfg.requiredHours) return '#8B2D2D';
+    return '#3F5F3F';
+  });
+
+  const ctx = $('hoursChart').getContext('2d');
+  state.charts.hours = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Hours',
+        data,
+        backgroundColor: colors,
+        borderRadius: 0,
+        barPercentage: 0.85,
+        categoryPercentage: 0.95,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const i = items[0].dataIndex;
+              const d = report.days[i];
+              return formatDateShort(d.date) + ' · ' + formatDayName(d.date);
+            },
+            label: (item) => {
+              const d = report.days[item.dataIndex];
+              if (d.isAbsent) return 'Absent · 0h';
+              if (!d.isComplete) return 'Incomplete (' + d.scanCount + ' scan)';
+              return hoursToHM(d.presenceHours) + ' · ' + formatTime(d.firstIn) + ' → ' + formatTime(d.lastOut);
+            }
+          },
+          backgroundColor: '#1A1815',
+          padding: 10,
+          titleFont: { family: 'Inter Tight', size: 12 },
+          bodyFont: { family: 'JetBrains Mono', size: 12 },
+        },
+        annotation: false,
+      },
+      scales: {
+        x: {
+          ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#847C6E' },
+          grid: { display: false },
+          border: { color: '#1A181555' }
+        },
+        y: {
+          ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#847C6E', callback: (v) => v + 'h' },
+          grid: { color: '#1A181510' },
+          border: { display: false },
+          beginAtZero: true,
+          suggestedMax: Math.max(cfg.requiredHours + 2, ...data) + 1,
+        }
+      },
+      animation: { duration: 600 },
+    },
+    plugins: [{
+      id: 'targetLine',
+      afterDraw: (chart) => {
+        const yScale = chart.scales.y;
+        const xScale = chart.scales.x;
+        const y = yScale.getPixelForValue(cfg.requiredHours);
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle = '#1A1815AA';
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(xScale.left, y);
+        ctx.lineTo(xScale.right, y);
+        ctx.stroke();
+        ctx.fillStyle = '#1A1815';
+        ctx.font = '600 9px "Inter Tight", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('REQ ' + cfg.requiredHours + 'h', xScale.right - 4, y - 4);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function renderArrivalChart(report) {
+  destroyChart('arrival');
+  const cfg = state.config;
+  const points = [];
+  const colors = [];
+  report.days.forEach((d, i) => {
+    if (d.isComplete && !d.weekend && d.expectedWorkday) {
+      points.push({ x: d.date.getDate(), y: minutesFromMidnight(d.firstIn) });
+      colors.push(d.isLate ? '#A06A1F' : '#3F5F3F');
+    }
+  });
+
+  const ctx = $('arrivalChart').getContext('2d');
+  const expectedM = timeStrToMinutes(cfg.expectedStart);
+
+  state.charts.arrival = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: points,
+        backgroundColor: colors,
+        borderColor: colors,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => 'Day ' + item.parsed.x + ' · ' + minToHm(item.parsed.y)
+          },
+          backgroundColor: '#1A1815',
+          padding: 10,
+          titleFont: { family: 'Inter Tight', size: 12 },
+          bodyFont: { family: 'JetBrains Mono', size: 12 },
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#847C6E', stepSize: 2 },
+          grid: { display: false },
+          border: { color: '#1A181555' },
+          title: { display: true, text: 'Day of month', font: { family: 'Inter Tight', size: 10 }, color: '#847C6E' },
+        },
+        y: {
+          ticks: {
+            font: { family: 'JetBrains Mono', size: 10 },
+            color: '#847C6E',
+            callback: (v) => minToHm(v),
+          },
+          grid: { color: '#1A181510' },
+          border: { display: false },
+          reverse: false,
+        }
+      },
+    },
+    plugins: [{
+      id: 'expectedLine',
+      afterDraw: (chart) => {
+        const yScale = chart.scales.y;
+        const xScale = chart.scales.x;
+        const y = yScale.getPixelForValue(expectedM);
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.strokeStyle = '#1A1815AA';
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(xScale.left, y);
+        ctx.lineTo(xScale.right, y);
+        ctx.stroke();
+        ctx.fillStyle = '#1A1815';
+        ctx.font = '600 9px "Inter Tight", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('START ' + cfg.expectedStart, xScale.right - 4, y - 4);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function minToHm(m) {
+  if (m == null || isNaN(m)) return '—';
+  m = Math.round(m);
+  return pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+}
+
+// ============================================================================
+// UTIL
+// ============================================================================
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ============================================================================
+// EVENTS
+// ============================================================================
+function setupEvents() {
+  // Retry button (shown only on error)
+  $('btnRetry').addEventListener('click', () => fetchSheet());
+
+  // File upload — fallback only, used if the sheet ever fails
+  $('btnUpload').addEventListener('click', () => $('fileInput').click());
+  $('fileInput').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (f) loadFile(f);
+  });
+
+  // Drag & drop on whole loader (also a fallback)
+  const loader = $('loader');
+  ['dragenter', 'dragover'].forEach(ev => loader.addEventListener(ev, (e) => {
+    e.preventDefault();
+    loader.classList.add('dragging');
+  }));
+  ['dragleave', 'drop'].forEach(ev => loader.addEventListener(ev, (e) => {
+    e.preventDefault();
+    loader.classList.remove('dragging');
+  }));
+  loader.addEventListener('drop', (e) => {
+    const f = e.dataTransfer.files[0];
+    if (f) loadFile(f);
+  });
+
+  // Sample data (fallback)
+  $('btnSample').addEventListener('click', () => loadSample());
+
+  // Employee selector
+  $('employeeSelect').addEventListener('change', (e) => {
+    state.selectedEmployee = e.target.value;
+    refresh();
+  });
+
+  // Config inputs
+  $('cfgHours').addEventListener('change', (e) => { state.config.requiredHours = +e.target.value || 8; syncSettings(); refresh(); });
+  $('cfgStart').addEventListener('change', (e) => { state.config.expectedStart = e.target.value || '08:00'; syncSettings(); refresh(); });
+  $('cfgGrace').addEventListener('change', (e) => { state.config.graceMinutes = +e.target.value || 0; syncSettings(); refresh(); });
+
+  // Settings drawer
+  $('btnSettings').addEventListener('click', openSettings);
+  $('closeSettings').addEventListener('click', closeSettings);
+  $('scrim').addEventListener('click', closeSettings);
+
+  $('setHours').addEventListener('change', (e) => { state.config.requiredHours = +e.target.value || 8; $('cfgHours').value = state.config.requiredHours; refresh(); });
+  $('setStart').addEventListener('change', (e) => { state.config.expectedStart = e.target.value || '08:00'; $('cfgStart').value = state.config.expectedStart; refresh(); });
+  $('setGrace').addEventListener('change', (e) => { state.config.graceMinutes = +e.target.value || 0; $('cfgGrace').value = state.config.graceMinutes; refresh(); });
+  $('setMaxHours').addEventListener('change', (e) => { state.config.maxHours = +e.target.value || 14; refresh(); });
+
+  // Weekday picker
+  buildWeekdayPicker();
+
+  // Settings drawer actions
+  $('loadAnotherBtn').addEventListener('click', () => $('fileInput').click());
+  $('refetchBtn').addEventListener('click', () => { closeSettings(); fetchSheet(); });
+
+  // Top bar refresh button — re-fetches from the Google Sheet
+  $('btnReload').addEventListener('click', () => fetchSheet());
+  $('btnPrint').addEventListener('click', () => window.print());
+
+  // Persist config
+  try {
+    const saved = JSON.parse(localStorage.getItem('attendanceConfig') || 'null');
+    if (saved) {
+      state.config = { ...state.config, ...saved };
+      $('cfgHours').value = state.config.requiredHours;
+      $('cfgStart').value = state.config.expectedStart;
+      $('cfgGrace').value = state.config.graceMinutes;
+    }
+  } catch (_) {}
+  // Save on changes
+  ['cfgHours', 'cfgStart', 'cfgGrace'].forEach(id => {
+    $(id).addEventListener('change', () => {
+      try { localStorage.setItem('attendanceConfig', JSON.stringify(state.config)); } catch (_) {}
+    });
+  });
+}
+
+function syncSettings() {
+  $('setHours').value = state.config.requiredHours;
+  $('setStart').value = state.config.expectedStart;
+  $('setGrace').value = state.config.graceMinutes;
+  $('setMaxHours').value = state.config.maxHours;
+}
+
+function openSettings() {
+  syncSettings();
+  $('settingsDrawer').classList.add('open');
+  $('scrim').classList.add('open');
+}
+function closeSettings() {
+  $('settingsDrawer').classList.remove('open');
+  $('scrim').classList.remove('open');
+}
+
+function buildWeekdayPicker() {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const host = $('weekdayPick');
+  host.innerHTML = days.map((d, i) => `
+    <button type="button" data-dow="${i}" class="btn ghost" style="padding:6px 10px; font-size:10px; ${state.config.workdays.includes(i) ? 'background:var(--ink); color:var(--paper-2);' : ''}">${d}</button>
+  `).join('');
+  host.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      const dow = +b.dataset.dow;
+      const idx = state.config.workdays.indexOf(dow);
+      if (idx >= 0) state.config.workdays.splice(idx, 1);
+      else state.config.workdays.push(dow);
+      buildWeekdayPicker();
+      refresh();
+    });
+  });
+}
+
+// ============================================================================
+// SAMPLE DATA (so it works even with no upload)
+// ============================================================================
+function loadSample() {
+  const names = ['Filip Izdebski', 'Yasin Patel', 'Anu Enkhbayar', 'Marcin Śliwa', 'Erika Erika',
+                 'Kamil Szulczyk', 'Eryk Aleksiejonek', 'Piotr Komosa', 'Vedat Avci', 'Daniel Jasion'];
+  const rows = [];
+  const startDay = new Date(2025, 6, 1); // July 1 2025
+  for (let day = 0; day < 31; day++) {
+    const date = new Date(startDay);
+    date.setDate(date.getDate() + day);
+    const isWknd = date.getDay() === 0 || date.getDay() === 6;
+    for (const name of names) {
+      // Some employees skip weekends
+      if (isWknd && Math.random() > 0.15) continue;
+      // Random absence
+      if (Math.random() < 0.04) continue;
+      // Personalized arrival pattern
+      const baseStartH = name === 'Filip Izdebski' ? 7.4 :
+                         name === 'Yasin Patel' ? 8.6 :
+                         name === 'Marcin Śliwa' ? 7.95 :
+                         name === 'Anu Enkhbayar' ? 8.1 :
+                         8.0;
+      const startH = baseStartH + (Math.random() - 0.5) * 0.7 + (Math.random() < 0.15 ? 0.8 : 0);
+      const lengthH = 8 + (Math.random() - 0.4) * 1.2;
+      const startTotalMin = Math.floor(startH * 60);
+      const endTotalMin = Math.floor(startTotalMin + lengthH * 60);
+      const sH = Math.floor(startTotalMin / 60), sM = startTotalMin % 60, sS = Math.floor(Math.random() * 60);
+      const eH = Math.floor(endTotalMin / 60), eM = endTotalMin % 60, eS = Math.floor(Math.random() * 60);
+      const fmt = (h, m, s) => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${((h % 12) || 12)}:${pad(m)}:${pad(s)} ${h < 12 ? 'AM' : 'PM'}`;
+      // First scan (morning) — 3 duplicate rows like the real export
+      for (let k = 0; k < 3; k++) rows.push([fmt(sH, sM, sS), name]);
+      // Optional mid-day scan (lunch break)
+      if (Math.random() < 0.6) {
+        const lH = 12, lM = Math.floor(Math.random() * 30), lS = Math.floor(Math.random() * 60);
+        for (let k = 0; k < 3; k++) rows.push([fmt(lH, lM, lS), name]);
+        const rH = 12 + (Math.random() < 0.7 ? 0 : 1);
+        const rM = 25 + Math.floor(Math.random() * 35);
+        const rS = Math.floor(Math.random() * 60);
+        for (let k = 0; k < 3; k++) rows.push([fmt(rH, rM, rS), name]);
+      }
+      // Last scan
+      for (let k = 0; k < 3; k++) rows.push([fmt(eH, eM, eS), name]);
+    }
+    // Sprinkle "None" entries
+    if (Math.random() < 0.5) rows.push([`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} 11:30:00 AM`, 'None']);
+  }
+  // Shuffle slightly
+  rows.sort(() => Math.random() - 0.5);
+  ingestRows(rows, 'Sample data · July 2025');
+}
+
+// ============================================================================
+// BOOT
+// ============================================================================
+setupEvents();
+// Auto-fetch from the Google Sheet immediately
+fetchSheet();
+</script>
+
+</body>
+</html>
