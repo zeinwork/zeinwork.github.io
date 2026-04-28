@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stock Count Reconciliation — Exact Solution Electronics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f1;
+    --surface: #ffffff;
+    --ink: #14181f;
+    --ink-soft: #4a5260;
+    --ink-mute: #8a93a3;
+    --border: #e1e3df;
+    --border-strong: #c8ccc4;
+    --accent: #0f1a2b;
+
+    --matched: #1f7a4d;
+    --matched-bg: #e8f3ec;
+    --shortage: #c52a2a;
+    --shortage-bg: #fbe9e9;
+    --surplus: #c2691a;
+    --surplus-bg: #fbf0e3;
+    --missing: #7a1717;
+    --missing-bg: #f5dada;
+    --extra: #1c4f8a;
+    --extra-bg: #e3edf8;
+    --review: #8a6d12;
+    --review-bg: #f7efd2;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(20,24,31,0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  html[dir="rtl"] body {
+    font-family: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .num { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* HEADER */
+  header.top {
+    background: var(--accent);
+    color: #f5f5f1;
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner {
+    max-width: 1600px; margin: 0 auto;
+    padding: 18px 28px;
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .brand {
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .brand .logo {
+    font-family: 'IBM Plex Serif', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+  .brand .pipe { opacity: 0.3; }
+  .brand .title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    opacity: 0.85;
+  }
+  .top-meta {
+    margin-left: auto;
+    display: flex; gap: 20px; align-items: center;
+    font-size: 12px;
+    opacity: 0.85;
+  }
+  .top-meta .item { display: flex; flex-direction: column; line-height: 1.2; }
+  .top-meta .item-label { text-transform: uppercase; letter-spacing: 1.5px; font-size: 10px; opacity: 0.6; }
+  .top-meta .item-val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  .btn {
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 500;
+    border-radius: 0;
+    transition: all 0.12s ease;
+  }
+  .btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn-primary {
+    background: #f5f5f1; color: var(--accent); border-color: #f5f5f1;
+  }
+  .btn-primary:hover { background: #fff; }
+  .btn-ghost { background: transparent; color: #f5f5f1; border-color: rgba(255,255,255,0.25); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
+
+  /* MAIN */
+  main {
+    max-width: 1600px; margin: 0 auto;
+    padding: 28px;
+  }
+
+  section { margin-bottom: 32px; }
+  .section-head {
+    display: flex; align-items: baseline; gap: 16px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  .section-head h2 {
+    margin: 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-head .num-marker {
+    font-family: 'IBM Plex Serif', serif;
+    font-style: italic;
+    color: var(--ink-mute);
+    font-size: 14px;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .kpi {
+    background: var(--surface);
+    padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+    position: relative;
+  }
+  .kpi-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .kpi-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .kpi.alert .kpi-value { color: var(--shortage); }
+  .kpi.warn  .kpi-value { color: var(--surplus); }
+  .kpi.ok    .kpi-value { color: var(--matched); }
+  .kpi.info  .kpi-value { color: var(--extra); }
+
+  /* FILTERS */
+  .filters {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .field input, .field select {
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    padding: 9px 11px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    border-radius: 0;
+    width: 100%;
+    transition: all 0.12s ease;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--ink);
+    background: #fff;
+  }
+  .toggle-row {
+    grid-column: 1 / -1;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    margin-top: 6px;
+  }
+  .toggle {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--ink-soft);
+    user-select: none;
+  }
+  .toggle input { width: auto; margin: 0; cursor: pointer; }
+  .filter-actions {
+    display: flex; gap: 8px;
+    align-items: end;
+  }
+
+  /* TABLE */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .table-toolbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .table-toolbar .count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .table-toolbar .count-label {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-right: 6px;
+  }
+  .table-toolbar .spacer { flex: 1; }
+
+  .table-scroll { overflow-x: auto; }
+  table.main {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.main thead th {
+    background: #fafaf6;
+    border-bottom: 1px solid var(--border-strong);
+    border-top: 1px solid var(--border);
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    position: sticky; top: 0; z-index: 1;
+  }
+  table.main thead th:hover { background: #f0f0ec; color: var(--ink); }
+  table.main thead th.sorted::after {
+    content: ' ↓';
+    color: var(--ink);
+  }
+  table.main thead th.sorted-asc::after { content: ' ↑'; }
+  table.main tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.main tbody tr:hover { background: #fafaf6; }
+
+  table.main tbody tr.row-matched { background: rgba(31, 122, 77, 0.04); }
+  table.main tbody tr.row-shortage { background: rgba(197, 42, 42, 0.06); }
+  table.main tbody tr.row-shortage td:first-child { box-shadow: inset 4px 0 0 var(--shortage); }
+  table.main tbody tr.row-surplus { background: rgba(194, 105, 26, 0.06); }
+  table.main tbody tr.row-surplus td:first-child { box-shadow: inset 4px 0 0 var(--surplus); }
+  table.main tbody tr.row-missing { background: rgba(122, 23, 23, 0.09); }
+  table.main tbody tr.row-missing td:first-child { box-shadow: inset 4px 0 0 var(--missing); }
+  table.main tbody tr.row-extra { background: rgba(28, 79, 138, 0.06); }
+  table.main tbody tr.row-extra td:first-child { box-shadow: inset 4px 0 0 var(--extra); }
+  table.main tbody tr.row-review { background: rgba(138, 109, 18, 0.07); }
+  table.main tbody tr.row-review td:first-child { box-shadow: inset 4px 0 0 var(--review); }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+  }
+  .pill.matched   { background: var(--matched-bg); color: var(--matched); }
+  .pill.shortage  { background: var(--shortage-bg); color: var(--shortage); }
+  .pill.surplus   { background: var(--surplus-bg); color: var(--surplus); }
+  .pill.missing   { background: var(--missing-bg); color: var(--missing); }
+  .pill.extra     { background: var(--extra-bg); color: var(--extra); }
+  .pill.review    { background: var(--review-bg); color: var(--review); }
+
+  .diff-pos { color: var(--surplus); font-weight: 600; }
+  .diff-neg { color: var(--shortage); font-weight: 600; }
+  .diff-zero { color: var(--ink-mute); }
+
+  .empty-state {
+    padding: 60px 30px;
+    text-align: center;
+    color: var(--ink-mute);
+  }
+  .empty-state h3 {
+    font-family: 'IBM Plex Serif', serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+
+  .loader {
+    padding: 80px 30px; text-align: center;
+  }
+  .loader .spin {
+    display: inline-block;
+    width: 24px; height: 24px;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--ink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-banner {
+    background: var(--shortage-bg);
+    border: 1px solid var(--shortage);
+    color: var(--shortage);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .error-banner strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1280px) {
+    .kpi-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .top-inner { padding: 14px 18px; gap: 14px; }
+    .top-meta { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    main { padding: 18px 14px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .filters { grid-template-columns: 1fr 1fr; }
+    .filter-actions { grid-column: 1 / -1; }
+    .kpi-value { font-size: 22px; }
+  }
+  @media (max-width: 560px) {
+    .brand .pipe, .brand .title { display: none; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .filters { grid-template-columns: 1fr; }
+    table.main thead th, table.main tbody td { padding: 9px 10px; font-size: 12px; }
+  }
+
+  /* RTL OVERRIDES — flip directional indicators when in Arabic mode */
+  html[dir="rtl"] table.main tbody tr.row-shortage td:first-child { box-shadow: inset -4px 0 0 var(--shortage); }
+  html[dir="rtl"] table.main tbody tr.row-surplus td:first-child  { box-shadow: inset -4px 0 0 var(--surplus); }
+  html[dir="rtl"] table.main tbody tr.row-missing td:first-child  { box-shadow: inset -4px 0 0 var(--missing); }
+  html[dir="rtl"] table.main tbody tr.row-extra td:first-child    { box-shadow: inset -4px 0 0 var(--extra); }
+  html[dir="rtl"] table.main tbody tr.row-review td:first-child   { box-shadow: inset -4px 0 0 var(--review); }
+  html[dir="rtl"] .section-head { flex-direction: row; }
+
+  /* Model names, locations, action references that contain item names — keep LTR
+     even inside Arabic layout so they read correctly */
+  .ltr-isolate { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+  .num { direction: ltr; unicode-bidi: isolate; }
+
+  /* Language switcher — three-way pill group: EN / FR / AR */
+  .lang-switcher {
+    display: inline-flex;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: transparent;
+    overflow: hidden;
+  }
+  .lang-btn {
+    background: transparent;
+    color: rgba(245,245,241,0.65);
+    border: none;
+    border-inline-end: 1px solid rgba(255,255,255,0.18);
+    padding: 8px 11px;
+    font-family: 'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    min-width: 42px;
+    text-align: center;
+    line-height: 1;
+  }
+  .lang-btn:last-child { border-inline-end: none; }
+  .lang-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .lang-btn.active { background: #f5f5f1; color: var(--accent); }
+  .lang-btn[data-lang="ar"] {
+    font-family: 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+    letter-spacing: 0;
+    font-size: 13px;
+  }
+
+  /* Arabic-mode typography: bump sizes and remove wide letter-spacing
+     that fragments Arabic word connections */
+  html[lang="ar"] body { font-size: 15px; }
+  html[lang="ar"] .brand .logo { font-size: 25px; }
+  html[lang="ar"] .brand .title { font-size: 14px; letter-spacing: 0.5px; }
+  html[lang="ar"] .top-meta { font-size: 13px; }
+  html[lang="ar"] .top-meta .item-label { font-size: 11px; letter-spacing: 0.5px; }
+  html[lang="ar"] .top-meta .item-val { font-size: 14px; }
+  html[lang="ar"] .btn { font-size: 13px; letter-spacing: 0.5px; }
+  html[lang="ar"] .num-marker { font-size: 16px; }
+  html[lang="ar"] .section-head h2 { font-size: 13px; letter-spacing: 0.5px; }
+  html[lang="ar"] .kpi-label { font-size: 12px; letter-spacing: 0.4px; }
+  html[lang="ar"] .kpi-value { font-size: 30px; }
+  html[lang="ar"] .kpi-sub { font-size: 12.5px; }
+  html[lang="ar"] .field label { font-size: 12px; letter-spacing: 0.4px; }
+  html[lang="ar"] .field input,
+  html[lang="ar"] .field select { font-size: 14px; }
+  html[lang="ar"] .toggle { font-size: 13px; }
+  html[lang="ar"] .table-toolbar .count-label { font-size: 12px; letter-spacing: 0.4px; }
+  html[lang="ar"] .table-toolbar .count { font-size: 14px; }
+  html[lang="ar"] table.main thead th { font-size: 12px; letter-spacing: 0.4px; }
+  html[lang="ar"] table.main tbody td { font-size: 14px; }
+  html[lang="ar"] .pill { font-size: 11px; letter-spacing: 0.3px; padding: 3px 9px; }
+  html[lang="ar"] .empty-state h3 { font-size: 26px; }
+  html[lang="ar"] .error-banner { font-size: 14px; }
+  html[lang="ar"] .error-banner strong { font-size: 12px; letter-spacing: 0.5px; }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; }
+    .filters, .filter-actions, .table-toolbar .btn, header.top .btn-ghost { display: none !important; }
+    .table-card, .kpi-grid, .filters { box-shadow: none; }
+    table.main thead th { background: #eee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr.row-matched, tr.row-shortage, tr.row-surplus, tr.row-missing, tr.row-extra, tr.row-review {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    main { padding: 12px; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="logo" data-i18n="brand_title">Stock&nbsp;Reconciliation</span>
+      <span class="pipe">/</span>
+      <span class="title" data-i18n="brand_subtitle">System &times; Physical &nbsp;·&nbsp; Warehouse Audit</span>
+    </div>
+    <div class="top-meta">
+      <div class="item">
+        <span class="item-label" data-i18n="last_refresh">Last Refresh</span>
+        <span class="item-val" id="last-refresh">—</span>
+      </div>
+      <div class="item">
+        <span class="item-label" data-i18n="source">Source</span>
+        <span class="item-val">Google Sheets</span>
+      </div>
+      <button class="btn btn-ghost" id="btn-refresh" data-i18n="btn_refresh">↻ Refresh</button>
+      <button class="btn btn-ghost" id="btn-print" data-i18n="btn_print">⎙ Print</button>
+      <div class="lang-switcher" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="en" title="English">EN</button>
+        <button class="lang-btn" data-lang="fr" title="Français">FR</button>
+        <button class="lang-btn" data-lang="ar" title="العربية">عربي</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="error-zone"></div>
+
+  <!-- KPI -->
+  <section>
+    <div class="section-head">
+      <span class="num-marker" data-i18n="marker_1">i.</span>
+      <h2 data-i18n="section_pulse">Inventory Pulse</h2>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <span class="kpi-label" data-i18n="kpi_sys_models">System · Models</span>
+        <span class="kpi-value" id="kpi-sys-models">—</span>
+        <span class="kpi-sub" data-i18n="kpi_sys_models_sub">unique SKUs in export</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label" data-i18n="kpi_sys_qty">System · Quantity</span>
+        <span class="kpi-value" id="kpi-sys-qty">—</span>
+        <span class="kpi-sub" data-i18n="kpi_sys_qty_sub">total units expected</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label" data-i18n="kpi_phy_models">Physical · Models</span>
+        <span class="kpi-value" id="kpi-phy-models">—</span>
+        <span class="kpi-sub" data-i18n="kpi_phy_models_sub">unique SKUs counted</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label" data-i18n="kpi_phy_qty">Physical · Quantity</span>
+        <span class="kpi-value" id="kpi-phy-qty">—</span>
+        <span class="kpi-sub" data-i18n="kpi_phy_qty_sub">total units found</span>
+      </div>
+      <div class="kpi" id="kpi-diff-card">
+        <span class="kpi-label" data-i18n="kpi_diff">Net Difference</span>
+        <span class="kpi-value" id="kpi-net-diff">—</span>
+        <span class="kpi-sub" data-i18n="kpi_diff_sub">physical − system</span>
+      </div>
+      <div class="kpi ok">
+        <span class="kpi-label" data-i18n="kpi_matched">Fully Matched</span>
+        <span class="kpi-value" id="kpi-matched">—</span>
+        <span class="kpi-sub" data-i18n="kpi_matched_sub">qty &amp; location agree</span>
+      </div>
+      <div class="kpi alert">
+        <span class="kpi-label" data-i18n="kpi_qty_mis">Qty Mismatch</span>
+        <span class="kpi-value" id="kpi-qty-mismatch">—</span>
+        <span class="kpi-sub" data-i18n="kpi_qty_mis_sub">shortage + surplus</span>
+      </div>
+      <div class="kpi alert">
+        <span class="kpi-label" data-i18n="kpi_missing">Missing Physically</span>
+        <span class="kpi-value" id="kpi-missing">—</span>
+        <span class="kpi-sub" data-i18n="kpi_missing_sub">in system, not on shelf</span>
+      </div>
+      <div class="kpi info">
+        <span class="kpi-label" data-i18n="kpi_extra">Extra Physical</span>
+        <span class="kpi-value" id="kpi-extra">—</span>
+        <span class="kpi-sub" data-i18n="kpi_extra_sub">on shelf, not in system</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <section>
+    <div class="section-head">
+      <span class="num-marker" data-i18n="marker_2">ii.</span>
+      <h2 data-i18n="section_filters">Refine the View</h2>
+    </div>
+    <div class="filters">
+      <div class="field">
+        <label for="f-search" data-i18n="f_search">Search Model</label>
+        <input id="f-search" type="text" data-i18n-placeholder="f_search_ph" placeholder="e.g. MacBook Pro 14&quot; M1…" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label for="f-status" data-i18n="f_status">Discrepancy Type</label>
+        <select id="f-status">
+          <option value="" data-i18n="opt_all_status">All statuses</option>
+          <option value="MATCHED" data-i18n="status_MATCHED">Matched</option>
+          <option value="QUANTITY_SHORTAGE" data-i18n="status_QUANTITY_SHORTAGE">Quantity Shortage</option>
+          <option value="QUANTITY_SURPLUS" data-i18n="status_QUANTITY_SURPLUS">Quantity Surplus</option>
+          <option value="MISSING_PHYSICALLY" data-i18n="status_MISSING_PHYSICALLY">Missing Physically</option>
+          <option value="EXTRA_PHYSICAL" data-i18n="status_EXTRA_PHYSICAL">Extra Physical Item</option>
+          <option value="NEED_REVIEW" data-i18n="status_NEED_REVIEW">Need Review</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn" id="btn-reset" data-i18n="btn_reset">Reset</button>
+      </div>
+
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="f-only-diff"/> <span data-i18n="toggle_diff">Only quantity differences</span></label>
+        <label class="toggle"><input type="checkbox" id="f-only-missing"/> <span data-i18n="toggle_missing">Only missing items</span></label>
+        <label class="toggle"><input type="checkbox" id="f-only-extra"/> <span data-i18n="toggle_extra">Only extra physical</span></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section>
+    <div class="section-head">
+      <span class="num-marker" data-i18n="marker_3">iii.</span>
+      <h2 data-i18n="section_table">The Reconciliation Ledger</h2>
+    </div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span><span class="count-label" data-i18n="showing">Showing</span><span class="count" id="row-count">0</span></span>
+        <span><span class="count-label" data-i18n="of">of</span><span class="count" id="row-total">0</span></span>
+        <span class="spacer"></span>
+        <button class="btn" id="btn-csv" data-i18n="btn_csv">⤓ Export CSV</button>
+        <button class="btn" id="btn-csv-disc" data-i18n="btn_csv_disc">⤓ Export Discrepancies Only</button>
+      </div>
+      <div class="table-scroll">
+        <table class="main" id="main-table">
+          <thead>
+            <tr>
+              <th data-sort="model" data-i18n="th_model">Model</th>
+              <th data-sort="sysQty" data-i18n="th_sys_qty" style="text-align:right;">Sys Qty</th>
+              <th data-sort="phyQty" data-i18n="th_phy_qty" style="text-align:right;">Phy Qty</th>
+              <th data-sort="diff" data-i18n="th_diff" style="text-align:right;">Diff</th>
+              <th data-sort="status" data-i18n="th_status">Status</th>
+              <th data-sort="action" data-i18n="th_action">Action Needed</th>
+            </tr>
+          </thead>
+          <tbody id="main-body">
+            <tr><td colspan="6" class="loader"><span class="spin"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* =========================================================================
+   CONFIG
+   ========================================================================= */
+const SHEET_ID = '1M39aVFnymAY-mrunF0YfQiVTuGR1oz2lEEMyemLf3zs';
+const SHEET_GID = '0';
+// gviz CSV endpoint — works for any link-shareable public sheet
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+
+const STATUS_KEYS = ['MATCHED','QUANTITY_SHORTAGE','QUANTITY_SURPLUS','MISSING_PHYSICALLY','EXTRA_PHYSICAL','NEED_REVIEW'];
+
+const STATUS_PILL = {
+  MATCHED: 'matched',
+  QUANTITY_SHORTAGE: 'shortage',
+  QUANTITY_SURPLUS: 'surplus',
+  MISSING_PHYSICALLY: 'missing',
+  EXTRA_PHYSICAL: 'extra',
+  NEED_REVIEW: 'review',
+};
+const STATUS_ROWCLASS = {
+  MATCHED: 'row-matched',
+  QUANTITY_SHORTAGE: 'row-shortage',
+  QUANTITY_SURPLUS: 'row-surplus',
+  MISSING_PHYSICALLY: 'row-missing',
+  EXTRA_PHYSICAL: 'row-extra',
+  NEED_REVIEW: 'row-review',
+};
+
+/* =========================================================================
+   I18N STRINGS
+   ========================================================================= */
+const STRINGS = {
+  en: {
+    brand_title: "Stock Reconciliation",
+    brand_subtitle: "System × Physical \u00a0·\u00a0 Warehouse Audit",
+    last_refresh: "Last Refresh",
+    source: "Source",
+    btn_refresh: "↻ Refresh",
+    btn_print: "⎙ Print",
+
+    marker_1: "i.", marker_2: "ii.", marker_3: "iii.",
+
+    section_pulse: "Inventory Pulse",
+    section_filters: "Refine the View",
+    section_table: "The Reconciliation Ledger",
+
+    kpi_sys_models: "System · Models",
+    kpi_sys_models_sub: "unique SKUs in export",
+    kpi_sys_qty: "System · Quantity",
+    kpi_sys_qty_sub: "total units expected",
+    kpi_phy_models: "Physical · Models",
+    kpi_phy_models_sub: "unique SKUs counted",
+    kpi_phy_qty: "Physical · Quantity",
+    kpi_phy_qty_sub: "total units found",
+    kpi_diff: "Net Difference",
+    kpi_diff_sub: "physical − system",
+    kpi_matched: "Fully Matched",
+    kpi_matched_sub: "quantities agree",
+    kpi_qty_mis: "Qty Mismatch",
+    kpi_qty_mis_sub: "shortage + surplus",
+    kpi_missing: "Missing Physically",
+    kpi_missing_sub: "in system, not in physical",
+    kpi_extra: "Extra Physical",
+    kpi_extra_sub: "in physical, not in system",
+
+    f_search: "Search Model",
+    f_search_ph: "e.g. MacBook Pro 14\" M1…",
+    f_status: "Discrepancy Type",
+    opt_all_status: "All statuses",
+    toggle_diff: "Only quantity differences",
+    toggle_missing: "Only missing items",
+    toggle_extra: "Only extra physical",
+    btn_reset: "Reset",
+
+    showing: "Showing",
+    of: "of",
+    btn_csv: "⤓ Export CSV",
+    btn_csv_disc: "⤓ Export Discrepancies Only",
+    th_model: "Model",
+    th_sys_qty: "Sys Qty",
+    th_phy_qty: "Phy Qty",
+    th_diff: "Diff",
+    th_status: "Status",
+    th_action: "Action Needed",
+
+    status_MATCHED: "Matched",
+    status_QUANTITY_SHORTAGE: "Quantity Shortage",
+    status_QUANTITY_SURPLUS: "Quantity Surplus",
+    status_MISSING_PHYSICALLY: "Missing Physically",
+    status_EXTRA_PHYSICAL: "Extra Physical Item",
+    status_NEED_REVIEW: "Need Review",
+
+    pill_MATCHED: "Matched",
+    pill_QUANTITY_SHORTAGE: "Qty Shortage",
+    pill_QUANTITY_SURPLUS: "Qty Surplus",
+    pill_MISSING_PHYSICALLY: "Missing Physically",
+    pill_EXTRA_PHYSICAL: "Extra Physical",
+    pill_NEED_REVIEW: "Need Review",
+
+    act_none: "No action needed",
+    act_search_missing: "Search physically for missing item",
+    act_add_extra: "Add extra physical item to system",
+    act_recount_shortage: "Recount — short by {gap}",
+    act_recount_surplus: "Recount — surplus of {gap}",
+    act_review: "Possible match with \"{candidate}\" (similarity {sim}%) — verify",
+
+    empty_title: "Nothing to reconcile.",
+    empty_body: "No rows match the current filters. Try resetting.",
+
+    err_title: "Could not load data",
+    err_help: "Make sure the sheet is shared as <em>Anyone with the link — Viewer</em>.",
+    err_empty: "Sheet appears empty.",
+    err_fetch_title: "Data fetch failed.",
+    err_fetch_body: "See the banner above for details, then click <strong>Refresh</strong>.",
+  },
+  fr: {
+    brand_title: "Rapprochement des Stocks",
+    brand_subtitle: "Système × Physique \u00a0·\u00a0 Audit Entrepôt",
+    last_refresh: "Dernière Actualisation",
+    source: "Source",
+    btn_refresh: "↻ Actualiser",
+    btn_print: "⎙ Imprimer",
+
+    marker_1: "i.", marker_2: "ii.", marker_3: "iii.",
+
+    section_pulse: "Pouls de l'Inventaire",
+    section_filters: "Affiner la Vue",
+    section_table: "Le Registre de Rapprochement",
+
+    kpi_sys_models: "Système · Modèles",
+    kpi_sys_models_sub: "références uniques dans l'export",
+    kpi_sys_qty: "Système · Quantité",
+    kpi_sys_qty_sub: "unités totales attendues",
+    kpi_phy_models: "Physique · Modèles",
+    kpi_phy_models_sub: "références uniques comptées",
+    kpi_phy_qty: "Physique · Quantité",
+    kpi_phy_qty_sub: "unités totales trouvées",
+    kpi_diff: "Différence Nette",
+    kpi_diff_sub: "physique − système",
+    kpi_matched: "Entièrement Concordants",
+    kpi_matched_sub: "les quantités concordent",
+    kpi_qty_mis: "Écart de Quantité",
+    kpi_qty_mis_sub: "manquant + excédent",
+    kpi_missing: "Manquant Physiquement",
+    kpi_missing_sub: "au système, absent du physique",
+    kpi_extra: "Excédent Physique",
+    kpi_extra_sub: "en physique, absent du système",
+
+    f_search: "Rechercher Modèle",
+    f_search_ph: "ex. MacBook Pro 14\" M1…",
+    f_status: "Type d'Écart",
+    opt_all_status: "Tous les statuts",
+    toggle_diff: "Uniquement écarts de quantité",
+    toggle_missing: "Uniquement articles manquants",
+    toggle_extra: "Uniquement excédents physiques",
+    btn_reset: "Réinitialiser",
+
+    showing: "Affichés",
+    of: "sur",
+    btn_csv: "⤓ Exporter CSV",
+    btn_csv_disc: "⤓ Exporter Écarts Uniquement",
+    th_model: "Modèle",
+    th_sys_qty: "Qté Sys",
+    th_phy_qty: "Qté Phy",
+    th_diff: "Écart",
+    th_status: "Statut",
+    th_action: "Action Requise",
+
+    status_MATCHED: "Concordant",
+    status_QUANTITY_SHORTAGE: "Manquant de Quantité",
+    status_QUANTITY_SURPLUS: "Excédent de Quantité",
+    status_MISSING_PHYSICALLY: "Manquant Physiquement",
+    status_EXTRA_PHYSICAL: "Article Physique Excédentaire",
+    status_NEED_REVIEW: "À Vérifier",
+
+    pill_MATCHED: "Concordant",
+    pill_QUANTITY_SHORTAGE: "Manquant",
+    pill_QUANTITY_SURPLUS: "Excédent",
+    pill_MISSING_PHYSICALLY: "Manquant Phys.",
+    pill_EXTRA_PHYSICAL: "Excédent Phys.",
+    pill_NEED_REVIEW: "À Vérifier",
+
+    act_none: "Aucune action requise",
+    act_search_missing: "Rechercher physiquement l'article manquant",
+    act_add_extra: "Ajouter l'article physique excédentaire au système",
+    act_recount_shortage: "Recompter — manquant de {gap}",
+    act_recount_surplus: "Recompter — excédent de {gap}",
+    act_review: "Correspondance possible avec « {candidate} » (similarité {sim} %) — à vérifier",
+
+    empty_title: "Rien à rapprocher.",
+    empty_body: "Aucune ligne ne correspond aux filtres actuels. Essayez de réinitialiser.",
+
+    err_title: "Impossible de charger les données",
+    err_help: "Assurez-vous que la feuille est partagée en <em>« Tous les utilisateurs disposant du lien — Lecteur »</em>.",
+    err_empty: "La feuille semble vide.",
+    err_fetch_title: "Échec du chargement des données.",
+    err_fetch_body: "Voir la bannière ci-dessus pour les détails, puis cliquez sur <strong>Actualiser</strong>.",
+  },
+  ar: {
+    brand_title: "تسوية المخزون",
+    brand_subtitle: "النظام × الفعلي \u00a0·\u00a0 تدقيق المستودع",
+    last_refresh: "آخر تحديث",
+    source: "المصدر",
+    btn_refresh: "↻ تحديث",
+    btn_print: "⎙ طباعة",
+
+    marker_1: "أ.", marker_2: "ب.", marker_3: "ج.",
+
+    section_pulse: "نبض المخزون",
+    section_filters: "تنقية العرض",
+    section_table: "سجل التسوية",
+
+    kpi_sys_models: "النظام · الموديلات",
+    kpi_sys_models_sub: "أصناف فريدة في التصدير",
+    kpi_sys_qty: "النظام · الكمية",
+    kpi_sys_qty_sub: "إجمالي الوحدات المتوقعة",
+    kpi_phy_models: "الفعلي · الموديلات",
+    kpi_phy_models_sub: "أصناف فريدة معدودة",
+    kpi_phy_qty: "الفعلي · الكمية",
+    kpi_phy_qty_sub: "إجمالي الوحدات الموجودة",
+    kpi_diff: "صافي الفرق",
+    kpi_diff_sub: "الفعلي − النظام",
+    kpi_matched: "متطابق كلياً",
+    kpi_matched_sub: "الكميات متطابقة",
+    kpi_qty_mis: "اختلاف بالكمية",
+    kpi_qty_mis_sub: "نقص + فائض",
+    kpi_missing: "مفقود فعلياً",
+    kpi_missing_sub: "في النظام، غير موجود فعلياً",
+    kpi_extra: "فائض فعلي",
+    kpi_extra_sub: "موجود فعلياً، غير موجود في النظام",
+
+    f_search: "بحث عن موديل",
+    f_search_ph: "مثلاً: MacBook Pro 14\" M1…",
+    f_status: "نوع الاختلاف",
+    opt_all_status: "جميع الحالات",
+    toggle_diff: "فقط الفروقات بالكمية",
+    toggle_missing: "فقط الأصناف المفقودة",
+    toggle_extra: "فقط الفوائض الفعلية",
+    btn_reset: "إعادة الضبط",
+
+    showing: "الظاهر",
+    of: "من",
+    btn_csv: "⤓ تصدير CSV",
+    btn_csv_disc: "⤓ تصدير الاختلافات فقط",
+    th_model: "الموديل",
+    th_sys_qty: "كمية النظام",
+    th_phy_qty: "الكمية الفعلية",
+    th_diff: "الفرق",
+    th_status: "الحالة",
+    th_action: "الإجراء المطلوب",
+
+    status_MATCHED: "متطابق",
+    status_QUANTITY_SHORTAGE: "نقص بالكمية",
+    status_QUANTITY_SURPLUS: "فائض بالكمية",
+    status_MISSING_PHYSICALLY: "مفقود فعلياً",
+    status_EXTRA_PHYSICAL: "صنف فعلي فائض",
+    status_NEED_REVIEW: "بحاجة لمراجعة",
+
+    pill_MATCHED: "متطابق",
+    pill_QUANTITY_SHORTAGE: "نقص",
+    pill_QUANTITY_SURPLUS: "فائض",
+    pill_MISSING_PHYSICALLY: "مفقود فعلياً",
+    pill_EXTRA_PHYSICAL: "فائض فعلي",
+    pill_NEED_REVIEW: "بحاجة مراجعة",
+
+    act_none: "لا حاجة لإجراء",
+    act_search_missing: "ابحث فعلياً عن الصنف المفقود",
+    act_add_extra: "أضف الصنف الفعلي الفائض إلى النظام",
+    act_recount_shortage: "أعد العد — نقص قدره {gap}",
+    act_recount_surplus: "أعد العد — فائض قدره {gap}",
+    act_review: "تطابق محتمل مع \"{candidate}\" (نسبة التشابه {sim}٪) — تحقّق",
+
+    empty_title: "لا شيء للتسوية.",
+    empty_body: "لا توجد صفوف مطابقة للمرشّحات الحالية. جرّب إعادة الضبط.",
+
+    err_title: "تعذّر تحميل البيانات",
+    err_help: "تأكد من أن مشاركة الورقة مفعّلة لـ <em>«أي شخص لديه الرابط — مشاهد»</em>.",
+    err_empty: "الورقة تبدو فارغة.",
+    err_fetch_title: "فشل جلب البيانات.",
+    err_fetch_body: "راجع الإشعار أعلاه للتفاصيل، ثم اضغط <strong>تحديث</strong>.",
+  },
+};
+
+let LANG = 'en';
+function t(key, params) {
+  let s = (STRINGS[LANG] && STRINGS[LANG][key]) || STRINGS.en[key] || key;
+  if (params) {
+    for (const k in params) s = s.replaceAll('{'+k+'}', params[k]);
+  }
+  return s;
+}
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let RAW_ROWS = [];        // array of comparison objects (post-processing)
+let SORT = { key: 'status', dir: 'asc' };
+
+/* =========================================================================
+   CSV PARSER (handles quoted fields, embedded commas/newlines, CRLF)
+   ========================================================================= */
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i+1] === '"') { field += '"'; i++; }
+        else inQ = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else if (c === '\r') { /* swallow */ }
+      else field += c;
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+/* =========================================================================
+   NORMALIZATION
+   ========================================================================= */
+function normalizeModel(s) {
+  if (s == null) return '';
+  return String(s).trim().replace(/\s+/g, ' ').toLowerCase();
+}
+function cleanText(s) {
+  if (s == null) return '';
+  return String(s).trim().replace(/\s+/g, ' ');
+}
+function toInt(s) {
+  if (s == null || s === '') return 0;
+  const cleaned = String(s).replace(/[^\d.\-]/g, '');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : Math.round(n);
+}
+
+/* =========================================================================
+   SIMILARITY (for NEED_REVIEW detection)
+   ========================================================================= */
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const dp = new Array(n+1);
+  for (let j = 0; j <= n; j++) dp[j] = j;
+  for (let i = 1; i <= m; i++) {
+    let prev = dp[0]; dp[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const tmp = dp[j];
+      dp[j] = a[i-1] === b[j-1] ? prev : 1 + Math.min(prev, dp[j], dp[j-1]);
+      prev = tmp;
+    }
+  }
+  return dp[n];
+}
+function similarity(a, b) {
+  if (!a || !b) return 0;
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return maxLen === 0 ? 1 : 1 - dist / maxLen;
+}
+
+/* =========================================================================
+   COMPARISON LOGIC
+   ========================================================================= */
+function buildComparison(rows) {
+  // skip header row
+  const data = rows.slice(1);
+
+  const sysMap = new Map(); // norm -> { display, qty }
+  const phyMap = new Map();
+
+  for (const r of data) {
+    if (!r || r.length < 1) continue;
+    // Column A: system model, Column B: system quantity
+    const sysModel = (r[0] || '').trim();
+    const sysQty   = toInt(r[1]);
+    // Column D: physical model, Column E: physical quantity
+    const phyModel = (r[3] || '').trim();
+    const phyQty   = toInt(r[4]);
+
+    if (sysModel) {
+      const k = normalizeModel(sysModel);
+      if (!sysMap.has(k)) sysMap.set(k, { display: cleanText(sysModel), qty: 0 });
+      const e = sysMap.get(k);
+      e.qty += sysQty;
+    }
+    if (phyModel) {
+      const k = normalizeModel(phyModel);
+      if (!phyMap.has(k)) phyMap.set(k, { display: cleanText(phyModel), qty: 0 });
+      const e = phyMap.get(k);
+      e.qty += phyQty;
+    }
+  }
+
+  const allKeys = new Set([...sysMap.keys(), ...phyMap.keys()]);
+  const out = [];
+  for (const key of allKeys) {
+    const sys = sysMap.get(key);
+    const phy = phyMap.get(key);
+
+    const display = (sys && sys.display) || (phy && phy.display) || key;
+    const sysQty = sys ? sys.qty : 0;
+    const phyQty = phy ? phy.qty : 0;
+    const diff = phyQty - sysQty;
+
+    let status, actionType, actionParams;
+    if (sys && !phy) {
+      status = 'MISSING_PHYSICALLY';
+      actionType = 'SEARCH_MISSING';
+      actionParams = {};
+    } else if (!sys && phy) {
+      status = 'EXTRA_PHYSICAL';
+      actionType = 'ADD_EXTRA';
+      actionParams = {};
+    } else {
+      // both exist
+      if (sysQty !== phyQty) {
+        status = sysQty > phyQty ? 'QUANTITY_SHORTAGE' : 'QUANTITY_SURPLUS';
+        const gap = Math.abs(diff);
+        if (status === 'QUANTITY_SHORTAGE') {
+          actionType = 'RECOUNT_SHORTAGE';
+          actionParams = { gap };
+        } else {
+          actionType = 'RECOUNT_SURPLUS';
+          actionParams = { gap };
+        }
+      } else {
+        status = 'MATCHED';
+        actionType = 'NONE';
+        actionParams = {};
+      }
+    }
+
+    out.push({
+      key,
+      model: display,
+      sysQty, phyQty, diff,
+      status,
+      actionType, actionParams,
+    });
+  }
+
+  // Detect NEED_REVIEW: scan MISSING vs EXTRA for similar names
+  const missing = out.filter(r => r.status === 'MISSING_PHYSICALLY');
+  const extras  = out.filter(r => r.status === 'EXTRA_PHYSICAL');
+  for (const m of missing) {
+    let best = null, bestSim = 0;
+    for (const e of extras) {
+      const s = similarity(m.key, e.key);
+      if (s > bestSim) { bestSim = s; best = e; }
+    }
+    if (best && bestSim >= 0.78 && bestSim < 1) {
+      const simPct = (bestSim*100).toFixed(0);
+      m.status = 'NEED_REVIEW';
+      m.actionType = 'REVIEW';
+      m.actionParams = { candidate: best.model, sim: simPct };
+      best.status = 'NEED_REVIEW';
+      best.actionType = 'REVIEW';
+      best.actionParams = { candidate: m.model, sim: simPct };
+    }
+  }
+
+  return out;
+}
+
+/* =========================================================================
+   ACTION TEXT FORMATTER (runs at render time, uses current language)
+   ========================================================================= */
+function formatAction(row) {
+  switch (row.actionType) {
+    case 'NONE':                 return t('act_none');
+    case 'SEARCH_MISSING':       return t('act_search_missing');
+    case 'ADD_EXTRA':            return t('act_add_extra');
+    case 'RECOUNT_SHORTAGE':     return t('act_recount_shortage', row.actionParams);
+    case 'RECOUNT_SURPLUS':      return t('act_recount_surplus', row.actionParams);
+    case 'REVIEW':               return t('act_review', row.actionParams);
+    default: return '';
+  }
+}
+
+/* =========================================================================
+   RENDER: KPIs
+   ========================================================================= */
+function renderKPIs(rows) {
+  const inSystem    = rows.filter(r => r.sysQty > 0 || r.status === 'MISSING_PHYSICALLY' || r.status === 'MATCHED' || r.status === 'QUANTITY_SHORTAGE' || r.status === 'QUANTITY_SURPLUS').length;
+  const inPhysical  = rows.filter(r => r.phyQty > 0 || r.status === 'EXTRA_PHYSICAL' || r.status === 'MATCHED' || r.status === 'QUANTITY_SHORTAGE' || r.status === 'QUANTITY_SURPLUS').length;
+  const sysQty      = rows.reduce((s,r)=>s+r.sysQty,0);
+  const phyQty      = rows.reduce((s,r)=>s+r.phyQty,0);
+  const netDiff     = phyQty - sysQty;
+  const matched     = rows.filter(r=>r.status==='MATCHED').length;
+  const qtyMis      = rows.filter(r=>r.status==='QUANTITY_SHORTAGE'||r.status==='QUANTITY_SURPLUS').length;
+  const missing     = rows.filter(r=>r.status==='MISSING_PHYSICALLY').length;
+  const extra       = rows.filter(r=>r.status==='EXTRA_PHYSICAL').length;
+
+  document.getElementById('kpi-sys-models').textContent = inSystem.toLocaleString();
+  document.getElementById('kpi-phy-models').textContent = inPhysical.toLocaleString();
+  document.getElementById('kpi-sys-qty').textContent    = sysQty.toLocaleString();
+  document.getElementById('kpi-phy-qty').textContent    = phyQty.toLocaleString();
+  const netEl = document.getElementById('kpi-net-diff');
+  netEl.textContent = (netDiff > 0 ? '+' : '') + netDiff.toLocaleString();
+  const card = document.getElementById('kpi-diff-card');
+  card.classList.remove('alert','warn','ok');
+  if (netDiff < 0) card.classList.add('alert');
+  else if (netDiff > 0) card.classList.add('warn');
+  else card.classList.add('ok');
+
+  document.getElementById('kpi-matched').textContent      = matched.toLocaleString();
+  document.getElementById('kpi-qty-mismatch').textContent = qtyMis.toLocaleString();
+  document.getElementById('kpi-missing').textContent      = missing.toLocaleString();
+  document.getElementById('kpi-extra').textContent        = extra.toLocaleString();
+}
+
+/* =========================================================================
+   FILTERING + SORTING
+   ========================================================================= */
+function getFiltered() {
+  const q = document.getElementById('f-search').value.trim().toLowerCase();
+  const status = document.getElementById('f-status').value;
+  const onlyDiff = document.getElementById('f-only-diff').checked;
+  const onlyMissing = document.getElementById('f-only-missing').checked;
+  const onlyExtra = document.getElementById('f-only-extra').checked;
+
+  let rows = RAW_ROWS.filter(r => {
+    if (q && !r.model.toLowerCase().includes(q)) return false;
+    if (status && r.status !== status) return false;
+    if (onlyDiff && r.diff === 0) return false;
+    if (onlyMissing && r.status !== 'MISSING_PHYSICALLY') return false;
+    if (onlyExtra && r.status !== 'EXTRA_PHYSICAL') return false;
+    return true;
+  });
+
+  // sort
+  const k = SORT.key;
+  const dir = SORT.dir === 'asc' ? 1 : -1;
+  rows.sort((a,b) => {
+    let va, vb;
+    switch (k) {
+      case 'model': va = a.model.toLowerCase(); vb = b.model.toLowerCase(); break;
+      case 'sysQty': va = a.sysQty; vb = b.sysQty; break;
+      case 'phyQty': va = a.phyQty; vb = b.phyQty; break;
+      case 'diff': va = a.diff; vb = b.diff; break;
+      case 'status': va = a.status; vb = b.status; break;
+      case 'action': va = formatAction(a); vb = formatAction(b); break;
+      default: va = 0; vb = 0;
+    }
+    if (va < vb) return -1*dir;
+    if (va > vb) return 1*dir;
+    return 0;
+  });
+
+  return rows;
+}
+
+/* =========================================================================
+   RENDER: TABLE
+   ========================================================================= */
+function escapeHTML(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderTable(rows) {
+  const body = document.getElementById('main-body');
+  document.getElementById('row-count').textContent = rows.length.toLocaleString();
+  document.getElementById('row-total').textContent = RAW_ROWS.length.toLocaleString();
+
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="6" class="empty-state">
+      <h3>${escapeHTML(t('empty_title'))}</h3>
+      <p>${escapeHTML(t('empty_body'))}</p>
+    </td></tr>`;
+    return;
+  }
+
+  const html = rows.map(r => {
+    const diffStr = r.diff === 0 ? '0' : (r.diff > 0 ? `+${r.diff}` : `${r.diff}`);
+    const diffCls = r.diff === 0 ? 'diff-zero' : (r.diff > 0 ? 'diff-pos' : 'diff-neg');
+    return `<tr class="${STATUS_ROWCLASS[r.status]}">
+      <td><strong class="ltr-isolate">${escapeHTML(r.model)}</strong></td>
+      <td class="num" style="text-align:right;">${r.sysQty.toLocaleString()}</td>
+      <td class="num" style="text-align:right;">${r.phyQty.toLocaleString()}</td>
+      <td class="num ${diffCls}" style="text-align:right;">${diffStr}</td>
+      <td><span class="pill ${STATUS_PILL[r.status]}">${escapeHTML(t('pill_'+r.status))}</span></td>
+      <td>${escapeHTML(formatAction(r))}</td>
+    </tr>`;
+  }).join('');
+  body.innerHTML = html;
+}
+
+/* =========================================================================
+   CSV EXPORT
+   ========================================================================= */
+function csvEscape(v) {
+  if (v == null) return '';
+  const s = String(v);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+  return s;
+}
+function exportCSV(onlyDiscrepancies) {
+  const data = onlyDiscrepancies
+    ? RAW_ROWS.filter(r => r.status !== 'MATCHED')
+    : RAW_ROWS;
+  const header = [
+    t('th_model'),
+    t('th_sys_qty'),
+    t('th_phy_qty'),
+    t('th_diff'),
+    t('th_status'),
+    t('th_action'),
+  ];
+  const lines = [header.join(',')];
+  data.forEach(r => {
+    lines.push([
+      r.model, r.sysQty, r.phyQty, r.diff,
+      t('status_'+r.status), formatAction(r)
+    ].map(csvEscape).join(','));
+  });
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  a.href = url;
+  a.download = `stock-reconciliation${onlyDiscrepancies?'-discrepancies':''}-${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================================
+   LANGUAGE APPLY / TOGGLE
+   ========================================================================= */
+let LAST_REFRESH_TIME = null;
+
+function dateLocaleFor(lang) {
+  if (lang === 'ar') return 'ar';
+  if (lang === 'fr') return 'fr-FR';
+  return 'en-GB';
+}
+function formatRefreshTime() {
+  const lr = document.getElementById('last-refresh');
+  if (!LAST_REFRESH_TIME) { lr.textContent = '—'; return; }
+  lr.textContent = LAST_REFRESH_TIME.toLocaleString(dateLocaleFor(LANG), { hour12: false });
+}
+
+function applyLanguage(lang) {
+  if (!['en','fr','ar'].includes(lang)) lang = 'en';
+  LANG = lang;
+  const html = document.documentElement;
+  html.lang = LANG;
+  html.dir = (LANG === 'ar') ? 'rtl' : 'ltr';
+
+  // Walk all elements with data-i18n and replace text content
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (!key) return;
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    el.placeholder = t(key);
+  });
+
+  // Update active state on the language switcher
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === LANG);
+  });
+
+  // Persist preference (this is a downloaded local file, localStorage is safe)
+  try { localStorage.setItem('stockdash.lang', LANG); } catch (e) { /* ignore */ }
+
+  // Re-render dynamic content so action text and status pills follow the language
+  if (RAW_ROWS.length) {
+    renderKPIs(RAW_ROWS);
+    refresh();
+  }
+  formatRefreshTime();
+}
+
+/* =========================================================================
+   FETCH + ORCHESTRATION
+   ========================================================================= */
+async function loadData() {
+  const body = document.getElementById('main-body');
+  body.innerHTML = `<tr><td colspan="6" class="loader"><span class="spin"></span></td></tr>`;
+  document.getElementById('error-zone').innerHTML = '';
+
+  // Cache-bust to enforce fresh data on every open
+  const url = `${SHEET_URL}&_cb=${Date.now()}`;
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error(t('err_empty'));
+
+    RAW_ROWS = buildComparison(rows);
+
+    // initial sort: discrepancies first, matched last
+    SORT = { key: 'status', dir: 'asc' };
+    renderKPIs(RAW_ROWS);
+    refresh();
+    updateSortIndicators();
+
+    document.getElementById('last-refresh').textContent = '';
+    LAST_REFRESH_TIME = new Date();
+    formatRefreshTime();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('error-zone').innerHTML = `
+      <div class="error-banner">
+        <strong>${escapeHTML(t('err_title'))}</strong>
+        ${escapeHTML(err.message || err)}<br/>
+        ${t('err_help')}
+      </div>`;
+    document.getElementById('main-body').innerHTML =
+      `<tr><td colspan="6" class="empty-state"><h3>${escapeHTML(t('err_fetch_title'))}</h3><p>${t('err_fetch_body')}</p></td></tr>`;
+  }
+}
+
+function refresh() {
+  const filtered = getFiltered();
+  renderTable(filtered);
+}
+
+/* =========================================================================
+   SORT HEADER HANDLING
+   ========================================================================= */
+function updateSortIndicators() {
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.classList.remove('sorted','sorted-asc');
+    if (th.dataset.sort === SORT.key) {
+      th.classList.add(SORT.dir === 'asc' ? 'sorted-asc' : 'sorted');
+    }
+  });
+}
+
+/* =========================================================================
+   EVENT WIRING
+   ========================================================================= */
+function wire() {
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if (SORT.key === k) SORT.dir = SORT.dir === 'asc' ? 'desc' : 'asc';
+      else { SORT.key = k; SORT.dir = (k === 'sysQty' || k === 'phyQty' || k === 'diff') ? 'desc' : 'asc'; }
+      updateSortIndicators();
+      refresh();
+    });
+  });
+
+  ['f-search','f-status','f-only-diff','f-only-missing','f-only-extra']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', refresh);
+      el.addEventListener('change', refresh);
+    });
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    document.getElementById('f-search').value = '';
+    document.getElementById('f-status').value = '';
+    document.getElementById('f-only-diff').checked = false;
+    document.getElementById('f-only-missing').checked = false;
+    document.getElementById('f-only-extra').checked = false;
+    refresh();
+  });
+
+  document.getElementById('btn-refresh').addEventListener('click', loadData);
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+  document.getElementById('btn-csv').addEventListener('click', () => exportCSV(false));
+  document.getElementById('btn-csv-disc').addEventListener('click', () => exportCSV(true));
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+}
+
+/* =========================================================================
+   BOOT
+   ========================================================================= */
+// Restore previous language preference if any
+let savedLang = 'en';
+try { savedLang = localStorage.getItem('stockdash.lang') || 'en'; } catch (e) { /* ignore */ }
+applyLanguage(savedLang);
+wire();
+loadData();
+</script>
+</body>
+</html>
